@@ -105,7 +105,10 @@ Page({
     editHours: '',
     editValidDays: '',
     editCardValidUntil: '',
-    editRemark: ''
+    editRemark: '',
+    showQrModal: false,
+    qrVoucher: null,
+    qrLoading: false
   },
 
   onLoad() {
@@ -127,6 +130,7 @@ Page({
         isExpired: expired,
         typeLabel: typeMap[item.type] || item.type,
         statusText: expired && item.status !== 'used' ? '已过期' : (statusMap[item.status] || item.status),
+        qrReady: Boolean(item.qrFileID),
         metaText: item.status === 'inactive'
           ? `未设置权益 · 卡有效期至 ${item.cardValidUntil || '-'}`
           : `${item.hours}小时 · 充值后${item.validDays}天有效 · 卡至 ${item.cardValidUntil || '-'}`
@@ -475,6 +479,69 @@ Page({
           content: '打印功能后面统一接入，现在先保留小票文本用于核对卡片内容。',
           showCancel: false
         });
+      }
+    });
+  },
+
+  async showVoucherQr(e) {
+    const id = e.currentTarget.dataset.id;
+    const voucher = this.data.vouchers.find(item => item._id === id);
+    if (!voucher) {
+      wx.showToast({ title: '未找到卡片', icon: 'none' });
+      return;
+    }
+    if (voucher.qrFileID) {
+      this.setData({ showQrModal: true, qrVoucher: voucher });
+      return;
+    }
+    this.setData({ qrLoading: true });
+    const result = await service.getVoucherQr(id);
+    this.setData({ qrLoading: false });
+    if (!result.success) {
+      wx.showToast({ title: result.error || '生成失败', icon: 'none' });
+      return;
+    }
+    const nextVoucher = { ...voucher, qrFileID: result.data.qrFileID, qrScene: result.data.qrScene };
+    this.setData({
+      showQrModal: true,
+      qrVoucher: nextVoucher,
+      vouchers: this.data.vouchers.map(item => item._id === id ? nextVoucher : item)
+    }, () => {
+      this.applyTabFilter();
+    });
+  },
+
+  closeQrModal() {
+    this.setData({ showQrModal: false, qrVoucher: null });
+  },
+
+  noop() {},
+
+  copyQrPath() {
+    const voucher = this.data.qrVoucher;
+    if (!voucher) return;
+    wx.setClipboardData({
+      data: `/pages/mine/redeem?code=${voucher.token}`,
+      success: () => {
+        wx.showToast({ title: '已复制路径', icon: 'success' });
+      }
+    });
+  },
+
+  saveQrImage() {
+    const voucher = this.data.qrVoucher;
+    if (!voucher || !voucher.qrFileID) return;
+    wx.getImageInfo({
+      src: voucher.qrFileID,
+      success: res => {
+        wx.saveImageToPhotosAlbum({
+          filePath: res.path,
+          success: () => wx.showToast({ title: '已保存', icon: 'success' }),
+          fail: () => wx.showToast({ title: '保存失败', icon: 'none' })
+        });
+      },
+      fail: () => {
+        wx.showToast({ title: '图片加载失败', icon: 'none' });
       }
     });
   }

@@ -922,6 +922,18 @@ module.exports = {
     }
   },
 
+  async getVoucherQr(id) {
+    if (!USE_CLOUD) {
+      return { success: false, error: '本地模式不能生成小程序码' };
+    }
+    try {
+      return await callVoucherAction({ action: 'getQr', id });
+    } catch (err) {
+      console.warn('cloud getVoucherQr failed:', err);
+      return { success: false, error: err.message || '生成小程序码失败' };
+    }
+  },
+
   // 获取教练预约
   async getCoachAppointments(coachId) {
     return tryCloud(

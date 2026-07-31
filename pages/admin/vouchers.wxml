@@ -86,6 +86,7 @@
           <view class="voucher-path">/pages/mine/redeem?code={{item.token}}</view>
           <view class="voucher-actions">
             <view class="copy-btn" bindtap="copyVoucher" data-code="{{item.token}}">复制码</view>
+            <view class="receipt-btn" bindtap="showVoucherQr" data-id="{{item._id}}">{{item.qrReady ? '查看二维码' : '生成二维码'}}</view>
             <view class="receipt-btn" bindtap="printVoucher" data-id="{{item._id}}">复制小票</view>
             <view wx:if="{{item.canEdit}}" class="copy-btn" bindtap="startEdit" data-id="{{item._id}}">编辑</view>
             <view wx:if="{{item.canSetPending}}" class="warn-btn" bindtap="setPending" data-id="{{item._id}}">待处理</view>
@@ -123,6 +124,22 @@
           <view class="btn-primary edit-btn" bindtap="saveEdit">保存</view>
         </view>
       </view>
+    </view>
+  </view>
+
+  <view wx:if="{{qrLoading}}" class="qr-loading">生成中...</view>
+
+  <view wx:if="{{showQrModal}}" class="qr-mask" bindtap="closeQrModal">
+    <view class="qr-panel" catchtap="noop">
+      <view class="qr-title">{{qrVoucher.cardNo}}</view>
+      <view class="qr-meta">{{qrVoucher.typeLabel}} · {{qrVoucher.hours}}小时 · 卡至 {{qrVoucher.cardValidUntil}}</view>
+      <image class="qr-image" src="{{qrVoucher.qrFileID}}" mode="aspectFit"></image>
+      <view class="qr-code-text">{{qrVoucher.token}}</view>
+      <view class="qr-actions">
+        <view class="btn-secondary qr-btn" bindtap="copyQrPath">复制路径</view>
+        <view class="btn-primary qr-btn" bindtap="saveQrImage">保存图片</view>
+      </view>
+      <view class="qr-close" bindtap="closeQrModal">关闭</view>
     </view>
   </view>
 </view>

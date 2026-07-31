@@ -693,3 +693,13 @@ CHANGED=pages/admin/courses.js|pages/admin/courses.wxml|pages/admin/courses.wxss
 FEATURE=18_hole_par_picker_grid,par_source_tracking,front_back_generation
 VERIFY=node_c_courses_ok,wxml_high_risk_scan_clean
 -- END 3D8A1F92 5 --
+
+[Codex] 6
+GPT-5 Codex, 2026-07-31 17:18 CST, A7F4C91D, 6
+TYPE=CHANGE STATUS=APPLIED
+SCOPE=voucher_qr_required_flow
+CHANGED=cloudfunctions/voucherAction/index.js|utils/service.js|pages/admin/vouchers.*|pages/mine/redeem.js
+FEATURE=wechat_wxacode_generation_for_vouchers,admin_qr_preview_save_copy,scene_auto_redeem
+NOTE=uses_official_mini_program_code_with_scene_code_token,no_external_qr_service
+VERIFY=node_c_voucherAction_service_adminVouchers_redeem_ok,wxml_high_risk_scan_clean
+-- END A7F4C91D 6 --

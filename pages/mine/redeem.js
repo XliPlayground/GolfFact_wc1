@@ -36,7 +36,8 @@ Page({
   },
 
   onLoad(options) {
-    const code = extractCode(options.code || options.cardNo || '');
+    const scene = options.scene ? decodeURIComponent(options.scene) : '';
+    const code = extractCode(options.code || options.cardNo || scene || '');
     if (code) {
       this.setData({ code }, () => {
         this.redeem();

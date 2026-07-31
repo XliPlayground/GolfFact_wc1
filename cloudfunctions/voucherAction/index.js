@@ -302,6 +302,42 @@ async function redeem(event) {
   };
 }
 
+async function getQr(event) {
+  const { id } = event;
+  if (!id) return { success: false, error: '缺少卡片 ID' };
+
+  const current = await db.collection('recharge_vouchers').doc(id).get();
+  const voucher = current.data;
+  if (!voucher) return { success: false, error: '卡片不存在' };
+  if (voucher.qrFileID) return { success: true, data: { qrFileID: voucher.qrFileID, qrScene: voucher.qrScene || '' } };
+  if (!voucher.token) return { success: false, error: '卡片缺少兑换码' };
+
+  const scene = `code=${voucher.token}`;
+  if (scene.length > 32) return { success: false, error: '兑换码过长，无法生成小程序码' };
+
+  const codeRes = await cloud.openapi.wxacode.getUnlimited({
+    scene,
+    page: 'pages/mine/redeem',
+    checkPath: false
+  });
+  if (!codeRes || !codeRes.buffer) return { success: false, error: '生成小程序码失败' };
+
+  const uploadRes = await cloud.uploadFile({
+    cloudPath: `voucher_qr/${voucher._id}_${Date.now()}.jpg`,
+    fileContent: codeRes.buffer
+  });
+  const qrFileID = uploadRes.fileID;
+  await db.collection('recharge_vouchers').doc(id).update({
+    data: {
+      qrFileID,
+      qrScene: scene,
+      updatedAt: new Date().toISOString(),
+      updateTime: db.serverDate()
+    }
+  });
+  return { success: true, data: { qrFileID, qrScene: scene } };
+}
+
 exports.main = async (event) => {
   try {
     if (event.action === 'generate') return generate(event);
@@ -310,6 +346,7 @@ exports.main = async (event) => {
     if (event.action === 'extend') return extend(event);
     if (event.action === 'activate') return activate(event);
     if (event.action === 'redeem') return redeem(event);
+    if (event.action === 'getQr') return getQr(event);
     return { success: false, error: '未知操作' };
   } catch (err) {
     console.error('voucherAction error:', err);
