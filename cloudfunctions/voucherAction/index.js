@@ -8,6 +8,10 @@ const TENANT_ID = 'golfact_default';
 const VOUCHER_COLLECTION = 'recharge_vouchers';
 const RECHARGE_COLLECTION = 'recharge_records';
 
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 async function ensureCollection(name) {
   try {
     await db.createCollection(name);
@@ -24,6 +28,16 @@ async function ensureCollection(name) {
 async function ensureVoucherCollections() {
   await ensureCollection(VOUCHER_COLLECTION);
   await ensureCollection(RECHARGE_COLLECTION);
+  await sleep(300);
+}
+
+function isCollectionMissingError(err) {
+  const code = String((err && (err.errCode || err.errcode)) || '');
+  const message = String((err && (err.message || err.errMsg)) || '');
+  return code === '-502005'
+    || message.indexOf('DATABASE_COLLECTION_NOT_EXIST') >= 0
+    || message.indexOf('Db or Table not exist') >= 0
+    || message.indexOf('collection not exists') >= 0;
 }
 
 function formatDate(date) {
@@ -94,15 +108,15 @@ async function generate(event) {
   const options = event.options || {};
   const count = Math.min(Math.max(Number(options.count || 1), 1), 50);
   const now = new Date().toISOString();
-  const totalRes = await db.collection('recharge_vouchers').where({ tenantId: TENANT_ID }).count();
-  const baseSeq = Number(totalRes.total || 0);
+  const baseSeq = Number(Date.now().toString().slice(-6));
   const created = [];
   const cardValidUntil = options.cardValidUntil || getDateAfterDays(options.cardValidDays || 365);
   const cardNos = [];
 
   for (let i = 0; i < count; i++) {
     const seq = baseSeq + i + 1;
-    const cardNo = options.cardNo ? incrementCardNo(options.cardNo, i) : `GF${String(seq).padStart(6, '0')}`;
+    const suffix = String(seq).padStart(6, '0').slice(-6);
+    const cardNo = options.cardNo ? incrementCardNo(options.cardNo, i) : `GF${suffix}`;
     cardNos.push(cardNo);
   }
 
@@ -397,6 +411,12 @@ exports.main = async (event) => {
     return { success: false, error: '未知操作' };
   } catch (err) {
     console.error('voucherAction error:', err);
+    if (isCollectionMissingError(err)) {
+      return {
+        success: false,
+        error: '云数据库缺少 recharge_vouchers 或 recharge_records 集合。请在云开发控制台数据库里手动新建这两个集合，然后重新生成卡片。'
+      };
+    }
     return { success: false, error: err.message || '卡片操作失败' };
   }
 };
