@@ -1,6 +1,7 @@
 const service = require('../../utils/service');
 
 const DEFAULT_PARS_TEXT = '';
+const PAR_OPTIONS = ['未维护', '3', '4', '5', '6'];
 const EMPTY_FORM = {
   _id: '',
   name: '',
@@ -13,9 +14,25 @@ const EMPTY_FORM = {
   parsText: DEFAULT_PARS_TEXT,
   nineHoleText: '',
   comboText: '',
+  parSource: '',
   features: '',
   dataSource: 'manual'
 };
+
+function parsToGrid(pars) {
+  const list = Array.isArray(pars) ? pars : [];
+  return Array.from({ length: 18 }, (_, index) => {
+    const par = Number(list[index] || 0);
+    const optionIndex = Math.max(PAR_OPTIONS.findIndex(item => Number(item) === par), 0);
+    return {
+      holeNumber: index + 1,
+      par,
+      parText: par ? String(par) : '-',
+      parPickerIndex: optionIndex,
+      className: par ? 'par-cell filled' : 'par-cell empty'
+    };
+  });
+}
 
 function parsToText(pars) {
   return (pars || []).join(',');
@@ -84,10 +101,20 @@ function combosToText(courseCombinations) {
     .join('\n');
 }
 
+function syncNineHoleFromPars(pars) {
+  if (!Array.isArray(pars) || pars.length !== 18) return '';
+  const front = pars.slice(0, 9);
+  const back = pars.slice(9, 18);
+  if (front.some(par => !par) || back.some(par => !par)) return '';
+  return `前9:${parsToText(front)}\n后9:${parsToText(back)}`;
+}
+
 Page({
   data: {
     courses: [],
     form: { ...EMPTY_FORM },
+    parOptions: PAR_OPTIONS,
+    parsGrid: parsToGrid([]),
     isEditing: false,
     showEmpty: true
   },
@@ -107,6 +134,7 @@ Page({
       regionText: [item.province, item.city].filter(Boolean).join(' · ') || '未设置地区',
       hasPars: Array.isArray(item.pars) && item.pars.length === 18 && Number(item.totalPar || 0) > 0,
       totalParText: item.totalPar ? String(item.totalPar) : '待维护',
+      parStatusText: item.parStatus === 'verified_manual' ? '已维护' : '待维护',
       holeCountText: String(item.holeCount || 18),
       parsText: (item.pars || []).length > 0 ? parsToText(item.pars || []) : '逐洞标准杆待维护',
       nineHoleText: nineHolesToText(item.nineHoleCourses || []),
@@ -122,6 +150,7 @@ Page({
   resetForm() {
     this.setData({
       form: { ...EMPTY_FORM },
+      parsGrid: parsToGrid([]),
       isEditing: true
     });
   },
@@ -167,19 +196,68 @@ Page({
         parsText: course.parsText || DEFAULT_PARS_TEXT,
         nineHoleText: course.nineHoleText || '',
         comboText: course.comboText || '',
+        parSource: course.parSource || '',
         features: course.features || '',
         dataSource: course.dataSource || 'manual'
       },
+      parsGrid: parsToGrid(course.pars || []),
       isEditing: true
     });
   },
 
   onInput(e) {
     const field = e.currentTarget.dataset.field;
+    const form = {
+      ...this.data.form,
+      [field]: e.detail.value
+    };
+    const next = { form };
+    if (field === 'parsText') {
+      next.parsGrid = parsToGrid(parsePars(e.detail.value, 18));
+    }
+    this.setData(next);
+  },
+
+  onParPickerChange(e) {
+    const index = Number(e.currentTarget.dataset.index);
+    const optionIndex = Number(e.detail.value || 0);
+    const par = Number(PAR_OPTIONS[optionIndex] || 0);
+    const pars = this.data.parsGrid.map(item => item.par || 0);
+    pars[index] = par;
+    const filledPars = pars.filter(item => Number(item) > 0);
+    this.setData({
+      parsGrid: parsToGrid(pars),
+      form: {
+        ...this.data.form,
+        parsText: filledPars.length ? parsToText(pars) : ''
+      }
+    });
+  },
+
+  clearPars() {
+    this.setData({
+      parsGrid: parsToGrid([]),
+      form: {
+        ...this.data.form,
+        parsText: '',
+        nineHoleText: '',
+        comboText: ''
+      }
+    });
+  },
+
+  buildNineHoleUnits() {
+    const pars = this.data.parsGrid.map(item => Number(item.par || 0));
+    const text = syncNineHoleFromPars(pars);
+    if (!text) {
+      wx.showToast({ title: '请先填满18洞标准杆', icon: 'none' });
+      return;
+    }
     this.setData({
       form: {
         ...this.data.form,
-        [field]: e.detail.value
+        nineHoleText: text,
+        comboText: '前9+后9'
       }
     });
   },
@@ -209,11 +287,13 @@ Page({
       totalPar: pars.reduce((sum, par) => sum + Number(par || 0), 0),
       nineHoleCourses,
       courseCombinations,
-      parStatus: pars.length === 18 ? 'verified_manual' : 'pending'
+      parStatus: pars.length === 18 ? 'verified_manual' : 'pending',
+      parSource: this.data.form.parSource || ''
     });
     wx.showToast({ title: '已保存', icon: 'success' });
     this.setData({
       form: { ...EMPTY_FORM },
+      parsGrid: parsToGrid([]),
       isEditing: false
     });
     this.loadData();

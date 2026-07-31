@@ -70,6 +70,49 @@
   min-height: 96rpx;
 }
 
+.par-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 10rpx;
+  margin-bottom: 14rpx;
+}
+
+.par-cell {
+  min-height: 82rpx;
+  border-radius: 10rpx;
+  background: #F9FAFB;
+  border: 1rpx solid #E5E7EB;
+  text-align: center;
+}
+
+.par-cell.filled {
+  background: #ECFDF5;
+  border-color: #86EFAC;
+}
+
+.par-hole {
+  padding-top: 8rpx;
+  color: #6B7280;
+  font-size: 20rpx;
+}
+
+.par-number {
+  color: #111827;
+  font-size: 30rpx;
+  font-weight: 800;
+  line-height: 42rpx;
+}
+
+.par-cell.empty .par-number {
+  color: #9CA3AF;
+}
+
+.par-actions {
+  display: flex;
+  gap: 12rpx;
+  margin-bottom: 14rpx;
+}
+
 .course-card {
   padding: 22rpx 0;
   border-bottom: 1rpx solid #F3F4F6;

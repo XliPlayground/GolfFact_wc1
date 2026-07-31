@@ -50,7 +50,19 @@
     </view>
     <view class="field-block">
       <view class="field-label">每洞标准杆</view>
-      <textarea class="field-textarea" placeholder="用逗号分隔 18 个数字，例如 4,5,4,3..." value="{{form.parsText}}" data-field="parsText" bindinput="onInput"></textarea>
+      <view class="par-grid">
+        <picker wx:for="{{parsGrid}}" wx:key="holeNumber" mode="selector" range="{{parOptions}}" value="{{item.parPickerIndex}}" data-index="{{index}}" bindchange="onParPickerChange">
+          <view class="{{item.className}}">
+            <view class="par-hole">{{item.holeNumber}}</view>
+            <view class="par-number">{{item.parText}}</view>
+          </view>
+        </picker>
+      </view>
+      <view class="par-actions">
+        <view class="small-btn" bindtap="buildNineHoleUnits">生成前9/后9</view>
+        <view class="small-btn danger" bindtap="clearPars">清空标准杆</view>
+      </view>
+      <textarea class="field-textarea compact" placeholder="也可粘贴18个数字，例如 4,5,4,3..." value="{{form.parsText}}" data-field="parsText" bindinput="onInput"></textarea>
     </view>
     <view class="field-block">
       <view class="field-label">9洞单元</view>
@@ -59,6 +71,10 @@
     <view class="field-block">
       <view class="field-label">18洞组合</view>
       <textarea class="field-textarea compact" placeholder="一行一个：前9+后9；A+B；B+C" value="{{form.comboText}}" data-field="comboText" bindinput="onInput"></textarea>
+    </view>
+    <view class="field-block">
+      <view class="field-label">标准杆来源</view>
+      <input class="field-input" placeholder="例如 老板记分卡照片、球场官网、Garmin导入" value="{{form.parSource}}" data-field="parSource" bindinput="onInput" />
     </view>
     <view class="field-block">
       <view class="field-label">场地特点</view>
@@ -74,8 +90,9 @@
       <view class="course-main" bindtap="selectCourse" data-id="{{item._id}}">
         <view>
           <view class="course-title">{{item.name}}</view>
-          <view class="course-meta">{{item.regionText}} · {{item.holeCountText}}洞 · Par {{item.totalParText}}</view>
+          <view class="course-meta">{{item.regionText}} · {{item.holeCountText}}洞 · {{item.parStatusText}} · Par {{item.totalParText}}</view>
           <view class="course-feature">{{item.features}}</view>
+          <view wx:if="{{item.parSource}}" class="course-feature">来源：{{item.parSource}}</view>
           <view wx:if="{{item.comboSummary}}" class="course-feature">组合：{{item.comboSummary}}</view>
         </view>
       </view>
