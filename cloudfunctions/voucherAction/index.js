@@ -1,4 +1,5 @@
 const cloud = require('wx-server-sdk');
+const QRCode = require('qrcode');
 
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV });
 
@@ -360,7 +361,6 @@ async function redeem(event) {
 async function getQr(event) {
   await ensureVoucherCollections();
   const { id, cardNo, token } = event;
-  const envVersion = ['develop', 'trial', 'release'].includes(event.envVersion) ? event.envVersion : 'trial';
   const force = event.force === true;
   if (!id && !cardNo && !token) return { success: false, error: '缺少卡片 ID 或卡号' };
 
@@ -388,37 +388,34 @@ async function getQr(event) {
     voucher = byToken.data[0] || null;
   }
   if (!voucher) return { success: false, error: '云端找不到这张卡。请先重新生成云端卡片，或确认 voucherAction 云函数部署成功后刷新列表。' };
-  if (!force && voucher.qrFileID && (voucher.qrEnvVersion || 'release') === envVersion) {
-    return { success: true, data: { qrFileID: voucher.qrFileID, qrScene: voucher.qrScene || '', qrEnvVersion: voucher.qrEnvVersion || 'release' } };
+  if (!force && voucher.qrFileID && (voucher.qrType || 'token') === 'token') {
+    return { success: true, data: { qrFileID: voucher.qrFileID, qrContent: voucher.qrContent || voucher.token, qrType: 'token' } };
   }
   if (!voucher.token) return { success: false, error: '卡片缺少兑换码' };
 
-  const scene = `cardNo=${voucher.cardNo}`;
-  if (scene.length > 32) return { success: false, error: '兑换码过长，无法生成小程序码' };
-
-  const codeRes = await cloud.openapi.wxacode.getUnlimited({
-    scene,
-    page: 'pages/mine/redeem',
-    checkPath: false,
-    envVersion
+  const qrContent = voucher.token;
+  const qrBuffer = await QRCode.toBuffer(qrContent, {
+    type: 'png',
+    errorCorrectionLevel: 'M',
+    margin: 2,
+    width: 480
   });
-  if (!codeRes || !codeRes.buffer) return { success: false, error: '生成小程序码失败' };
 
   const uploadRes = await cloud.uploadFile({
-    cloudPath: `voucher_qr/${voucher._id}_${Date.now()}.jpg`,
-    fileContent: codeRes.buffer
+    cloudPath: `voucher_qr/${voucher._id}_${Date.now()}.png`,
+    fileContent: qrBuffer
   });
   const qrFileID = uploadRes.fileID;
-  await db.collection('recharge_vouchers').doc(id).update({
+  await db.collection('recharge_vouchers').doc(voucher._id).update({
     data: {
       qrFileID,
-      qrScene: scene,
-      qrEnvVersion: envVersion,
+      qrContent,
+      qrType: 'token',
       updatedAt: new Date().toISOString(),
       updateTime: db.serverDate()
     }
   });
-  return { success: true, data: { qrFileID, qrScene: scene, qrEnvVersion: envVersion } };
+  return { success: true, data: { qrFileID, qrContent, qrType: 'token' } };
 }
 
 exports.main = async (event) => {

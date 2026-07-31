@@ -779,3 +779,13 @@ FIX=generate_trial_env_wxacode_by_default,force_refresh_old_release_qr,display_q
 CAUSE=release_wxacode_points_to_unpublished_mini_program_version
 VERIFY=node_c_voucherAction_service_adminVouchers_ok,wxml_scan_clean
 -- END 71AE4D3B 5 --
+
+[Codex] 6
+GPT-5 Codex, 2026-07-31 18:48 CST, C5A9E274, 6
+TYPE=FIX STATUS=APPLIED
+SCOPE=voucher_qr_type_correctness
+CHANGED=cloudfunctions/voucherAction/index.js|cloudfunctions/voucherAction/package.json|cloudfunctions/voucherAction/config.json|utils/service.js|pages/admin/vouchers.js|pages/admin/vouchers.wxml
+FIX=replace_wxacode_with_standard_qr_png_containing_gf_token
+CAUSE=wechat_mini_program_code_does_not_decode_to_token_in_in_app_scan
+VERIFY=node_c_voucherAction_service_adminVouchers_ok,json_ok,wxml_scan_clean
+-- END C5A9E274 6 --

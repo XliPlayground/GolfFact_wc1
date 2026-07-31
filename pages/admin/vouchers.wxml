@@ -133,7 +133,7 @@
     <view class="qr-panel" catchtap="noop">
       <view class="qr-title">{{qrVoucher.cardNo}}</view>
       <view class="qr-meta">{{qrVoucher.typeLabel}} · {{qrVoucher.hours}}小时 · 卡至 {{qrVoucher.cardValidUntil}}</view>
-      <view class="qr-meta">小程序码版本：{{qrVoucher.qrEnvLabel}}</view>
+      <view class="qr-meta">普通二维码 · 内容为兑换码</view>
       <image class="qr-image" src="{{qrVoucher.qrFileID}}" mode="aspectFit"></image>
       <view class="qr-code-text">{{qrVoucher.token}}</view>
       <view class="qr-actions">

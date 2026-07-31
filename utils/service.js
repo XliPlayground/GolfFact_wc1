@@ -924,7 +924,7 @@ module.exports = {
 
   async getVoucherQr(voucher, options = {}) {
     if (!USE_CLOUD) {
-      return { success: false, error: '本地模式不能生成小程序码' };
+      return { success: false, error: '本地模式不能生成二维码' };
     }
     try {
       const payload = typeof voucher === 'string' ? { id: voucher } : (voucher || {});
@@ -933,7 +933,6 @@ module.exports = {
         id: payload._id || payload.id || '',
         cardNo: payload.cardNo || '',
         token: payload.token || '',
-        envVersion: options.envVersion || 'trial',
         force: options.force === true
       });
     } catch (err) {
@@ -942,7 +941,7 @@ module.exports = {
       const message = err.message || err.errMsg || String(err);
       const hint = String(code) === '-504002' || message.indexOf('-504002') >= 0
         ? '云函数调用失败：请确认 voucherAction 已部署到 cloud1-d8gwt560627562aff，并选择“上传并部署：云端安装依赖”。'
-        : '生成小程序码失败';
+        : '生成二维码失败';
       return { success: false, error: `${hint}\n${message}` };
     }
   },

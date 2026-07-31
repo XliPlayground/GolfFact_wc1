@@ -17,12 +17,6 @@ const TAB_OPTIONS = [
   { label: '已使用', value: 'used' }
 ];
 
-const QR_ENV_LABELS = {
-  develop: '开发版',
-  trial: '体验版',
-  release: '正式版'
-};
-
 function decorateTabs(activeTab) {
   return TAB_OPTIONS.map(item => ({
     ...item,
@@ -114,8 +108,7 @@ Page({
     editRemark: '',
     showQrModal: false,
     qrVoucher: null,
-    qrLoading: false,
-    qrEnvVersion: 'trial'
+    qrLoading: false
   },
 
   onLoad() {
@@ -519,12 +512,12 @@ Page({
       return;
     }
     this.setData({ qrLoading: true });
-    const result = await service.getVoucherQr(voucher, { envVersion: this.data.qrEnvVersion, force: true });
+    const result = await service.getVoucherQr(voucher, { force: true });
     this.setData({ qrLoading: false });
     if (!result.success) {
       wx.showModal({
         title: '二维码生成失败',
-        content: result.error || '生成失败，请确认 voucherAction 云函数已重新部署，并具备 wxacode.getUnlimited 权限。',
+        content: result.error || '生成失败，请确认 voucherAction 云函数已重新部署，并选择“云端安装依赖”。',
         showCancel: false
       });
       return;
@@ -532,9 +525,8 @@ Page({
     const nextVoucher = {
       ...voucher,
       qrFileID: result.data.qrFileID,
-      qrScene: result.data.qrScene,
-      qrEnvVersion: result.data.qrEnvVersion,
-      qrEnvLabel: QR_ENV_LABELS[result.data.qrEnvVersion] || '体验版'
+      qrContent: result.data.qrContent,
+      qrType: result.data.qrType
     };
     this.setData({
       showQrModal: true,
