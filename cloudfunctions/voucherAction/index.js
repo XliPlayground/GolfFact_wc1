@@ -16,11 +16,16 @@ async function ensureCollection(name) {
   try {
     await db.createCollection(name);
   } catch (err) {
-    if (err && err.errCode !== -502005) {
-      const message = String(err.message || err.errMsg || '');
-      if (message.indexOf('already exists') < 0 && message.indexOf('collection already exists') < 0) {
-        throw err;
-      }
+    const code = String((err && (err.errCode || err.errcode)) || '');
+    const message = String((err && (err.message || err.errMsg)) || '');
+    const alreadyExists = code === '-501001'
+      || message.indexOf('Resource Exist') >= 0
+      || message.indexOf('Table exist') >= 0
+      || message.indexOf('DATABASE_COLLECTION_ALREADY_EXIST') >= 0
+      || message.indexOf('already exists') >= 0
+      || message.indexOf('collection already exists') >= 0;
+    if (!alreadyExists) {
+      throw err;
     }
   }
 }

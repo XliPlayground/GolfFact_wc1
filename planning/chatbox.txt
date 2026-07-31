@@ -751,3 +751,12 @@ CHANGED=cloudfunctions/voucherAction/index.js
 FIX=remove_recharge_vouchers_count_dependency,use_time_based_card_sequence,friendlier_missing_collection_error
 VERIFY=node_c_voucherAction_ok
 -- END B91E4C2A 4 --
+
+[Codex] 4
+GPT-5 Codex, 2026-07-31 18:16 CST, E64C7A92, 4
+TYPE=FIX STATUS=APPLIED
+SCOPE=voucher_create_collection_already_exists
+CHANGED=cloudfunctions/voucherAction/index.js
+FIX=treat_-501001_resource_exist_table_exist_as_success_when_ensuring_collections
+VERIFY=node_c_voucherAction_ok
+-- END E64C7A92 4 --
