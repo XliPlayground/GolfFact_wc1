@@ -275,7 +275,7 @@ Page({
       return;
     }
     wx.showToast({ title: mode === 'inactive' ? '空卡已生成' : '已生成', icon: 'success' });
-    this.loadVouchers();
+    await this.loadVouchers();
   },
 
   scanActivateCard() {

@@ -851,17 +851,15 @@ module.exports = {
   },
 
   async getVouchers() {
-    return tryCloud(
-      async () => {
-        const res = await db.query('recharge_vouchers', db.withTenant({}));
-        if (!res.success) return res;
-        const data = (res.data || [])
-          .filter(item => item.status !== 'deleted')
-          .sort((a, b) => new Date(b.createdAt || b.createTime || 0) - new Date(a.createdAt || a.createTime || 0));
-        return { success: true, data };
-      },
-      () => mock.getVouchers()
-    );
+    if (!USE_CLOUD) return mock.getVouchers();
+    try {
+      const res = await callVoucherAction({ action: 'list' });
+      if (res.success) return res.data || [];
+      return [];
+    } catch (err) {
+      console.warn('cloud getVouchers failed:', err);
+      return [];
+    }
   },
 
   async updateVoucher(id, patch) {

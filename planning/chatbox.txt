@@ -760,3 +760,12 @@ CHANGED=cloudfunctions/voucherAction/index.js
 FIX=treat_-501001_resource_exist_table_exist_as_success_when_ensuring_collections
 VERIFY=node_c_voucherAction_ok
 -- END E64C7A92 4 --
+
+[Codex] 4
+GPT-5 Codex, 2026-07-31 18:24 CST, 2A7D91E3, 4
+TYPE=FIX STATUS=APPLIED
+SCOPE=voucher_list_not_visible_after_generate
+CHANGED=cloudfunctions/voucherAction/index.js|utils/service.js|pages/admin/vouchers.js
+FIX=read_voucher_list_through_voucherAction_list_instead_of_direct_db_query
+VERIFY=node_c_voucherAction_service_adminVouchers_ok
+-- END 2A7D91E3 4 --

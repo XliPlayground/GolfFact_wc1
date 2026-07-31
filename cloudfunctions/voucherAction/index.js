@@ -163,6 +163,18 @@ async function generate(event) {
   return { success: true, data: count === 1 ? created[0] : created };
 }
 
+async function list() {
+  await ensureVoucherCollections();
+  const res = await db.collection(VOUCHER_COLLECTION)
+    .where({ tenantId: TENANT_ID })
+    .limit(1000)
+    .get();
+  const data = (res.data || [])
+    .filter(item => item.status !== 'deleted')
+    .sort((a, b) => new Date(b.createdAt || b.createTime || 0) - new Date(a.createdAt || a.createTime || 0));
+  return { success: true, data };
+}
+
 async function update(event) {
   await ensureVoucherCollections();
   const { id, patch = {} } = event;
@@ -406,6 +418,7 @@ async function getQr(event) {
 exports.main = async (event) => {
   try {
     if (event.action === 'ping') return { success: true, data: { name: 'voucherAction', time: new Date().toISOString() } };
+    if (event.action === 'list') return list(event);
     if (event.action === 'generate') return generate(event);
     if (event.action === 'update') return update(event);
     if (event.action === 'delete') return deleteVoucher(event);
