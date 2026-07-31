@@ -17,6 +17,12 @@ const TAB_OPTIONS = [
   { label: '已使用', value: 'used' }
 ];
 
+const QR_ENV_LABELS = {
+  develop: '开发版',
+  trial: '体验版',
+  release: '正式版'
+};
+
 function decorateTabs(activeTab) {
   return TAB_OPTIONS.map(item => ({
     ...item,
@@ -108,7 +114,8 @@ Page({
     editRemark: '',
     showQrModal: false,
     qrVoucher: null,
-    qrLoading: false
+    qrLoading: false,
+    qrEnvVersion: 'trial'
   },
 
   onLoad() {
@@ -512,7 +519,7 @@ Page({
       return;
     }
     this.setData({ qrLoading: true });
-    const result = await service.getVoucherQr(voucher);
+    const result = await service.getVoucherQr(voucher, { envVersion: this.data.qrEnvVersion, force: true });
     this.setData({ qrLoading: false });
     if (!result.success) {
       wx.showModal({
@@ -522,7 +529,13 @@ Page({
       });
       return;
     }
-    const nextVoucher = { ...voucher, qrFileID: result.data.qrFileID, qrScene: result.data.qrScene };
+    const nextVoucher = {
+      ...voucher,
+      qrFileID: result.data.qrFileID,
+      qrScene: result.data.qrScene,
+      qrEnvVersion: result.data.qrEnvVersion,
+      qrEnvLabel: QR_ENV_LABELS[result.data.qrEnvVersion] || '体验版'
+    };
     this.setData({
       showQrModal: true,
       qrVoucher: nextVoucher,

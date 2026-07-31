@@ -360,6 +360,8 @@ async function redeem(event) {
 async function getQr(event) {
   await ensureVoucherCollections();
   const { id, cardNo, token } = event;
+  const envVersion = ['develop', 'trial', 'release'].includes(event.envVersion) ? event.envVersion : 'trial';
+  const force = event.force === true;
   if (!id && !cardNo && !token) return { success: false, error: '缺少卡片 ID 或卡号' };
 
   let voucher = null;
@@ -386,7 +388,9 @@ async function getQr(event) {
     voucher = byToken.data[0] || null;
   }
   if (!voucher) return { success: false, error: '云端找不到这张卡。请先重新生成云端卡片，或确认 voucherAction 云函数部署成功后刷新列表。' };
-  if (voucher.qrFileID) return { success: true, data: { qrFileID: voucher.qrFileID, qrScene: voucher.qrScene || '' } };
+  if (!force && voucher.qrFileID && (voucher.qrEnvVersion || 'release') === envVersion) {
+    return { success: true, data: { qrFileID: voucher.qrFileID, qrScene: voucher.qrScene || '', qrEnvVersion: voucher.qrEnvVersion || 'release' } };
+  }
   if (!voucher.token) return { success: false, error: '卡片缺少兑换码' };
 
   const scene = `cardNo=${voucher.cardNo}`;
@@ -395,7 +399,8 @@ async function getQr(event) {
   const codeRes = await cloud.openapi.wxacode.getUnlimited({
     scene,
     page: 'pages/mine/redeem',
-    checkPath: false
+    checkPath: false,
+    envVersion
   });
   if (!codeRes || !codeRes.buffer) return { success: false, error: '生成小程序码失败' };
 
@@ -408,11 +413,12 @@ async function getQr(event) {
     data: {
       qrFileID,
       qrScene: scene,
+      qrEnvVersion: envVersion,
       updatedAt: new Date().toISOString(),
       updateTime: db.serverDate()
     }
   });
-  return { success: true, data: { qrFileID, qrScene: scene } };
+  return { success: true, data: { qrFileID, qrScene: scene, qrEnvVersion: envVersion } };
 }
 
 exports.main = async (event) => {

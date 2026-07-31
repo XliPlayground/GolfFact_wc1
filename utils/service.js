@@ -922,7 +922,7 @@ module.exports = {
     }
   },
 
-  async getVoucherQr(voucher) {
+  async getVoucherQr(voucher, options = {}) {
     if (!USE_CLOUD) {
       return { success: false, error: '本地模式不能生成小程序码' };
     }
@@ -932,7 +932,9 @@ module.exports = {
         action: 'getQr',
         id: payload._id || payload.id || '',
         cardNo: payload.cardNo || '',
-        token: payload.token || ''
+        token: payload.token || '',
+        envVersion: options.envVersion || 'trial',
+        force: options.force === true
       });
     } catch (err) {
       console.warn('cloud getVoucherQr failed:', err);

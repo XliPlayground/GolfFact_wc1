@@ -769,3 +769,13 @@ CHANGED=cloudfunctions/voucherAction/index.js|utils/service.js|pages/admin/vouch
 FIX=read_voucher_list_through_voucherAction_list_instead_of_direct_db_query
 VERIFY=node_c_voucherAction_service_adminVouchers_ok
 -- END 2A7D91E3 4 --
+
+[Codex] 5
+GPT-5 Codex, 2026-07-31 18:36 CST, 71AE4D3B, 5
+TYPE=FIX STATUS=APPLIED
+SCOPE=voucher_qr_not_yet_release
+CHANGED=cloudfunctions/voucherAction/index.js|utils/service.js|pages/admin/vouchers.js|pages/admin/vouchers.wxml
+FIX=generate_trial_env_wxacode_by_default,force_refresh_old_release_qr,display_qr_env_label
+CAUSE=release_wxacode_points_to_unpublished_mini_program_version
+VERIFY=node_c_voucherAction_service_adminVouchers_ok,wxml_scan_clean
+-- END 71AE4D3B 5 --
