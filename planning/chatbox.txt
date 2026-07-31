@@ -674,3 +674,13 @@ FIX=client_side_course_import_can_fail_due_database_permissions
 FEATURE=courseAction_importRegionalCourses_cloud_function,import_result_modal
 VERIFY=node_c_courseAction_service_courses_ok,json_ok
 -- END 7C4E9B21 6 --
+
+[Codex] 7
+GPT-5 Codex, 2026-07-31 16:45 CST, 9B6E2C10, 7
+TYPE=CHANGE STATUS=APPLIED
+SCOPE=cloud_voucher_appointment_activity_course_truth_guard
+CHANGED=cloudfunctions/courseAction.*|cloudfunctions/initData/index.js|cloudfunctions/voucherAction/index.js|cloudfunctions/appointmentAction/index.js|cloudfunctions/activityAction/index.js|pages/admin/courses.js|pages/admin/vouchers.js|pages/admin/activities.js|pages/scorecard/edit.js|utils/mock.js|utils/service.js|docs/setup.md
+FIX=remove_fake_regional_course_pars_and_mark_unverified_courses_pending
+FEATURE=voucher_duplicate_card_guard_redeeming_lock,appointment_server_continuity_validation,activity_capacity_guard_and_record_upsert
+VERIFY=node_c_all_touched_js_ok,json_ok,wxml_high_risk_scan_clean
+-- END 9B6E2C10 7 --

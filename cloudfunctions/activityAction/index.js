@@ -61,6 +61,12 @@ async function updateRegistration(event) {
   const registrations = activity.registrations || [];
   const registration = registrations.find(item => item.userId === userId);
   if (!registration) return { success: false, message: '报名不存在' };
+  if (status === 'approved') {
+    const approvedCount = registrations.filter(item => item.status === 'approved' || item.status === 'completed').length;
+    if (activity.maxParticipants && approvedCount >= Number(activity.maxParticipants) && registration.status !== 'approved') {
+      return { success: false, message: '活动名额已满，不能继续同意' };
+    }
+  }
 
   registration.status = status;
   registration.updatedAt = new Date().toISOString();
@@ -151,7 +157,26 @@ async function createRecord(event) {
     createTime: db.serverDate(),
     updateTime: db.serverDate()
   };
-  const recordRes = await db.collection('activity_records').add({ data: activityRecord });
+  let recordId = '';
+  const existingRecordRes = await db.collection('activity_records')
+    .where({ tenantId: 'golfact_default', activityId: data.activityId, userId: data.userId, scorecardId })
+    .limit(1)
+    .get();
+  if (existingRecordRes.data[0]) {
+    recordId = existingRecordRes.data[0]._id;
+    await db.collection('activity_records').doc(recordId).update({
+      data: {
+        totalStrokes: activityRecord.totalStrokes,
+        netScore: activityRecord.netScore,
+        status: activityRecord.status,
+        recordedBy: activityRecord.recordedBy,
+        updateTime: db.serverDate()
+      }
+    });
+  } else {
+    const recordRes = await db.collection('activity_records').add({ data: activityRecord });
+    recordId = recordRes._id;
+  }
 
   const registrations = activity.registrations || [];
   const registration = registrations.find(item => item.userId === data.userId);
@@ -170,7 +195,7 @@ async function createRecord(event) {
     success: true,
     data: {
       scorecard: { ...scorecard, _id: scorecardId },
-      record: { ...activityRecord, _id: recordRes._id }
+      record: { ...activityRecord, _id: recordId }
     }
   };
 }

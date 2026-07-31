@@ -4,7 +4,6 @@ cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV });
 
 const db = cloud.database();
 const TENANT_ID = 'golfact_default';
-const DEFAULT_NINE_PARS = Array.from({ length: 9 }, () => 4);
 
 const JINGJINJI_COURSE_SEEDS = [
   ['北京高尔夫俱乐部', '北京', '北京', '顺义区'],
@@ -62,9 +61,6 @@ const JINGJINJI_COURSE_SEEDS = [
 ];
 
 function buildCourse([name, province, city, address]) {
-  const front = { name: '前9', pars: DEFAULT_NINE_PARS, totalPar: 36 };
-  const back = { name: '后9', pars: DEFAULT_NINE_PARS, totalPar: 36 };
-  const pars = [...front.pars, ...back.pars];
   return {
     tenantId: TENANT_ID,
     name,
@@ -74,17 +70,12 @@ function buildCourse([name, province, city, address]) {
     latitude: '',
     longitude: '',
     holeCount: 18,
-    pars,
-    totalPar: 72,
-    nineHoleCourses: [front, back],
-    courseCombinations: [{
-      name: '前9+后9',
-      parts: ['前9', '后9'],
-      pars,
-      holeCount: 18,
-      totalPar: 72
-    }],
-    features: '京津冀球场库第一版；逐洞标准杆为 Par36+36 占位，老板可在后台按实际记分卡修正。',
+    pars: [],
+    totalPar: 0,
+    nineHoleCourses: [],
+    courseCombinations: [],
+    parStatus: 'pending',
+    features: '京津冀球场名录第一版；逐洞标准杆待老板按真实记分卡维护，维护前不会自动带入记分。',
     dataSource: 'regional_seed_2026',
     status: 'active',
     createTime: db.serverDate(),
@@ -97,27 +88,82 @@ async function importRegionalCourses() {
     .where({ tenantId: TENANT_ID })
     .limit(1000)
     .get();
-  const existingNames = new Set((existingRes.data || []).map(item => item.name));
+  const existingByName = {};
+  (existingRes.data || []).forEach(item => {
+    existingByName[item.name] = item;
+  });
   let imported = 0;
+  let updated = 0;
   let skipped = 0;
 
   for (const seed of JINGJINJI_COURSE_SEEDS) {
     const name = seed[0];
-    if (existingNames.has(name)) {
+    const course = buildCourse(seed);
+    const existing = existingByName[name];
+    if (existing) {
+      const pars = existing.pars || [];
+      const shouldRepair = existing.dataSource === 'regional_seed_2026' || pars.every(par => Number(par) === 4);
+      if (!shouldRepair) {
+        skipped += 1;
+        continue;
+      }
+      await db.collection('courses').doc(existing._id).update({
+        data: {
+          pars: course.pars,
+          totalPar: course.totalPar,
+          nineHoleCourses: course.nineHoleCourses,
+          courseCombinations: course.courseCombinations,
+          parStatus: course.parStatus,
+          features: course.features,
+          dataSource: course.dataSource,
+          updateTime: db.serverDate()
+        }
+      });
+      updated += 1;
+      continue;
+    }
+    await db.collection('courses').add({ data: course });
+    imported += 1;
+    existingByName[name] = course;
+  }
+
+  return { success: true, data: { imported, updated, skipped, total: JINGJINJI_COURSE_SEEDS.length } };
+}
+
+async function repairRegionalCoursePars() {
+  const existingRes = await db.collection('courses')
+    .where({ tenantId: TENANT_ID, dataSource: 'regional_seed_2026' })
+    .limit(1000)
+    .get();
+  let updated = 0;
+  let skipped = 0;
+  for (const existing of existingRes.data || []) {
+    const seed = JINGJINJI_COURSE_SEEDS.find(item => item[0] === existing.name);
+    if (!seed) {
       skipped += 1;
       continue;
     }
-    await db.collection('courses').add({ data: buildCourse(seed) });
-    imported += 1;
-    existingNames.add(name);
+    const course = buildCourse(seed);
+    await db.collection('courses').doc(existing._id).update({
+      data: {
+        pars: course.pars,
+        totalPar: course.totalPar,
+        nineHoleCourses: course.nineHoleCourses,
+        courseCombinations: course.courseCombinations,
+        parStatus: course.parStatus,
+        features: course.features,
+        updateTime: db.serverDate()
+      }
+    });
+    updated += 1;
   }
-
-  return { success: true, data: { imported, skipped, total: JINGJINJI_COURSE_SEEDS.length } };
+  return { success: true, data: { updated, skipped } };
 }
 
 exports.main = async (event) => {
   try {
     if (event.action === 'importRegionalCourses') return importRegionalCourses();
+    if (event.action === 'repairRegionalCoursePars') return repairRegionalCoursePars();
     return { success: false, error: '未知操作' };
   } catch (err) {
     console.error('courseAction error:', err);

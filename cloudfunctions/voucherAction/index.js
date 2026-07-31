@@ -77,10 +77,25 @@ async function generate(event) {
   const baseSeq = Number(totalRes.total || 0);
   const created = [];
   const cardValidUntil = options.cardValidUntil || getDateAfterDays(options.cardValidDays || 365);
+  const cardNos = [];
 
   for (let i = 0; i < count; i++) {
     const seq = baseSeq + i + 1;
     const cardNo = options.cardNo ? incrementCardNo(options.cardNo, i) : `GF${String(seq).padStart(6, '0')}`;
+    cardNos.push(cardNo);
+  }
+
+  for (const cardNo of cardNos) {
+    const exists = await db.collection('recharge_vouchers')
+      .where({ tenantId: TENANT_ID, cardNo })
+      .limit(1)
+      .get();
+    if (exists.data[0]) return { success: false, error: `卡号 ${cardNo} 已存在` };
+  }
+
+  for (let i = 0; i < cardNos.length; i++) {
+    const seq = baseSeq + i + 1;
+    const cardNo = cardNos[i];
     const voucher = {
       tenantId: TENANT_ID,
       cardNo,
@@ -202,6 +217,7 @@ async function redeem(event) {
   const voucher = await getVoucherByCode(event.code);
   if (!voucher) return { success: false, error: '兑换卡不存在' };
   if (voucher.status === 'used') return { success: false, error: '该卡已兑换' };
+  if (voucher.status === 'redeeming') return { success: false, error: '该卡正在兑换，请稍后刷新' };
   if (voucher.status === 'pending') return { success: false, error: '该卡暂未开放兑换' };
   if (voucher.status !== 'active') return { success: false, error: '该卡未激活' };
   if (isVoucherExpired(voucher)) return { success: false, error: '该卡已过期，请联系老板延期' };
@@ -224,6 +240,19 @@ async function redeem(event) {
 
   const latest = await db.collection('recharge_vouchers').doc(voucher._id).get();
   if (latest.data.status !== 'active') return { success: false, error: '该卡已被处理，请刷新后重试' };
+  const lockRes = await db.collection('recharge_vouchers')
+    .where({ tenantId: TENANT_ID, _id: voucher._id, status: 'active' })
+    .update({
+      data: {
+        status: 'redeeming',
+        redeemingByUserId: user._id,
+        redeemingAt: new Date().toISOString(),
+        updateTime: db.serverDate()
+      }
+    });
+  if (!lockRes.stats || lockRes.stats.updated !== 1) {
+    return { success: false, error: '该卡正在兑换或已被处理，请刷新后重试' };
+  }
 
   const now = new Date().toISOString();
   const expiryDate = voucher.fixedExpiryDate || getDateAfterDays(voucher.validDays || 180);

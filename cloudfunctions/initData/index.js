@@ -4,7 +4,6 @@ const cloud = require('wx-server-sdk');
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV });
 const db = cloud.database();
 const TENANT_ID = 'golfact_default';
-const DEFAULT_NINE_PARS = Array.from({ length: 9 }, () => 4);
 
 const JINGJINJI_COURSE_SEEDS = [
   ['北京高尔夫俱乐部', '北京', '北京', '顺义区'],
@@ -301,9 +300,6 @@ async function seedData() {
 
   for (let i = 0; i < JINGJINJI_COURSE_SEEDS.length; i++) {
     const [name, province, city, address] = JINGJINJI_COURSE_SEEDS[i];
-    const front = { name: '前9', pars: DEFAULT_NINE_PARS, totalPar: 36 };
-    const back = { name: '后9', pars: DEFAULT_NINE_PARS, totalPar: 36 };
-    const pars = [...front.pars, ...back.pars];
     await db.collection('courses').add({
       data: {
         tenantId: TENANT_ID,
@@ -314,17 +310,12 @@ async function seedData() {
         latitude: '',
         longitude: '',
         holeCount: 18,
-        pars,
-        totalPar: 72,
-        nineHoleCourses: [front, back],
-        courseCombinations: [{
-          name: '前9+后9',
-          parts: ['前9', '后9'],
-          pars,
-          holeCount: 18,
-          totalPar: 72
-        }],
-        features: '京津冀球场库第一版；逐洞标准杆为 Par36+36 占位，老板可在后台按实际记分卡修正。',
+        pars: [],
+        totalPar: 0,
+        nineHoleCourses: [],
+        courseCombinations: [],
+        parStatus: 'pending',
+        features: '京津冀球场名录第一版；逐洞标准杆待老板按真实记分卡维护，维护前不会自动带入记分。',
         dataSource: 'regional_seed_2026',
         status: 'active',
         createTime: db.serverDate(),

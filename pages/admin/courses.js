@@ -1,6 +1,6 @@
 const service = require('../../utils/service');
 
-const DEFAULT_PARS_TEXT = '4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4';
+const DEFAULT_PARS_TEXT = '';
 const EMPTY_FORM = {
   _id: '',
   name: '',
@@ -26,7 +26,6 @@ function parsePars(value, limit) {
     .split(/[\s,，、/]+/)
     .map(item => Number(item))
     .filter(item => item > 0);
-  while (list.length < limit) list.push(4);
   return list.slice(0, limit);
 }
 
@@ -39,6 +38,7 @@ function parseNineHoleText(value) {
       const parts = line.split(/[:：]/);
       const name = String(parts[0] || '').trim().toUpperCase();
       const pars = parsePars(parts.slice(1).join(':'), 9);
+      if (pars.length !== 9) return null;
       return name ? { name, pars, totalPar: pars.reduce((sum, par) => sum + par, 0) } : null;
     })
     .filter(Boolean);
@@ -105,9 +105,10 @@ Page({
     const decorated = (courses || []).map(item => ({
       ...item,
       regionText: [item.province, item.city].filter(Boolean).join(' · ') || '未设置地区',
-      totalParText: String(item.totalPar || 0),
+      hasPars: Array.isArray(item.pars) && item.pars.length === 18 && Number(item.totalPar || 0) > 0,
+      totalParText: item.totalPar ? String(item.totalPar) : '待维护',
       holeCountText: String(item.holeCount || 18),
-      parsText: parsToText(item.pars || []),
+      parsText: (item.pars || []).length > 0 ? parsToText(item.pars || []) : '逐洞标准杆待维护',
       nineHoleText: nineHolesToText(item.nineHoleCourses || []),
       comboText: combosToText(item.courseCombinations || []),
       comboSummary: (item.courseCombinations || []).map(combo => `${combo.name} Par ${combo.totalPar}`).join(' · ')
@@ -128,7 +129,7 @@ Page({
   importRegionalCourses() {
     wx.showModal({
       title: '导入京津冀球场',
-      content: '会增量导入北京、天津、河北球场库，不会清空现有数据。已存在同名球场会跳过。',
+      content: '会增量导入北京、天津、河北球场名录，不会清空现有数据。没有可靠来源的逐洞标准杆会标记为待维护，不会自动带入记分。',
       success: async res => {
         if (!res.confirm) return;
         const result = await service.importRegionalCourses();
@@ -139,7 +140,7 @@ Page({
         const data = result.data || {};
         wx.showModal({
           title: '导入完成',
-          content: `新增 ${data.imported || 0} 个，跳过 ${data.skipped || 0} 个。`,
+          content: `新增 ${data.imported || 0} 个，更新 ${data.updated || 0} 个，跳过 ${data.skipped || 0} 个。`,
           showCancel: false,
           success: () => {
             this.loadData();
@@ -193,13 +194,22 @@ Page({
     const pars = courseCombinations[0]
       ? courseCombinations[0].pars
       : parsePars(this.data.form.parsText, 18);
+    if (pars.length > 0 && pars.length !== 18) {
+      wx.showToast({ title: '每洞标准杆需填满18洞', icon: 'none' });
+      return;
+    }
+    if (this.data.form.nineHoleText && nineHoleCourses.length === 0) {
+      wx.showToast({ title: '9洞单元需每行填满9洞', icon: 'none' });
+      return;
+    }
     await service.saveCourse({
       ...this.data.form,
       pars,
-      holeCount: pars.length,
+      holeCount: Number(this.data.form.holeCount || 18),
       totalPar: pars.reduce((sum, par) => sum + Number(par || 0), 0),
       nineHoleCourses,
-      courseCombinations
+      courseCombinations,
+      parStatus: pars.length === 18 ? 'verified_manual' : 'pending'
     });
     wx.showToast({ title: '已保存', icon: 'success' });
     this.setData({

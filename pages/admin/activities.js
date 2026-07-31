@@ -25,6 +25,8 @@ function splitDateTime(value, fallbackDate, fallbackClock) {
 function expandCourseOptions(courses) {
   const rows = [];
   (courses || []).forEach(course => {
+    const hasPars = Array.isArray(course.pars) && course.pars.length === 18 && course.pars.every(par => Number(par) > 0);
+    if (!hasPars) return;
     rows.push(course);
     (course.courseCombinations || []).forEach(combo => {
       rows.push({

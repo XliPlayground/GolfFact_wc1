@@ -115,10 +115,23 @@ async function createAppointment(event) {
     return { success: false, error: '缺少预约时段' };
   }
 
+  const slotRows = [];
   for (const slotId of data.timeSlotIds) {
     const slotRes = await db.collection('bay_time_slots').doc(slotId).get();
     const slot = slotRes.data;
-    if (!slot || slot.isBooked) return { success: false, error: '部分时段已被预约，请重新选择' };
+    if (!slot || !slot.isOpen || slot.isBooked) return { success: false, error: '部分时段不可预约，请重新选择' };
+    slotRows.push({ ...slot, _id: slotId });
+  }
+
+  slotRows.sort((a, b) => String(a.startTime || '').localeCompare(String(b.startTime || '')));
+  if (slotRows.length < 2) return { success: false, error: '至少选择连续两个时段' };
+  const first = slotRows[0];
+  const sameContext = slotRows.every(slot => slot.date === first.date && slot.bayId === first.bayId && slot.type === first.type);
+  if (!sameContext) return { success: false, error: '请选择同一天、同打位、同类型的连续时段' };
+  for (let i = 1; i < slotRows.length; i++) {
+    if (slotRows[i - 1].endTime !== slotRows[i].startTime) {
+      return { success: false, error: '预约时段必须连续，不能间隔选择' };
+    }
   }
 
   const deductedHours = Number(data.deductedHours || data.duration || 0);

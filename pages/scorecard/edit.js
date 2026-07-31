@@ -4,9 +4,14 @@ const mock = require('../../utils/mock');
 const NUMBER_OPTIONS = Array.from({ length: 11 }, (_, index) => index);
 const PLACEHOLDER_COURSE = { _id: '', name: '请选择球场', pars: [] };
 
+function hasUsablePars(course) {
+  return Array.isArray(course && course.pars) && course.pars.length === 18 && course.pars.every(par => Number(par) > 0);
+}
+
 function expandCourseOptions(courses) {
   const rows = [];
   (courses || []).forEach(course => {
+    if (!hasUsablePars(course)) return;
     rows.push(course);
     (course.courseCombinations || []).forEach(combo => {
       rows.push({
@@ -25,13 +30,15 @@ function expandCourseOptions(courses) {
 }
 
 function getStrokeOptions(par) {
-  const max = Math.max(Number(par || 4) * 2, 1);
+  if (!Number(par || 0)) return [0];
+  const max = Math.max(Number(par) * 2, 1);
   return Array.from({ length: max + 1 }, (_, index) => index);
 }
 
 function clampStrokesToDoublePar(strokes, par) {
-  const number = Number.isFinite(Number(strokes)) ? Number(strokes) : Number(par || 4);
-  return Math.max(0, Math.min(Number(par || 4) * 2, number));
+  if (!Number(par || 0)) return 0;
+  const number = Number.isFinite(Number(strokes)) ? Number(strokes) : Number(par);
+  return Math.max(0, Math.min(Number(par) * 2, number));
 }
 
 function matchCourseByLocation(courses, location) {
@@ -117,17 +124,17 @@ Page({
     const courseNameText = courseName || '选择球场名称';
     const pars = courseIndex > 0
       ? matchedCourse.pars
-      : Array.from({ length: 18 }, () => 4);
+      : [];
     const holes = [];
 
     for (let i = 1; i <= 18; i++) {
-      const par = pars[i - 1] || 4;
+      const par = pars[i - 1] || 0;
       holes.push({
         holeNumber: i,
         par,
-        strokes: par,
-        resultText: this.getHoleResultText(par, par),
-        resultClass: 'result-tag par',
+        strokes: par || 0,
+        resultText: par ? this.getHoleResultText(par, par) : '-',
+        resultClass: par ? 'result-tag par' : 'result-tag over',
         strokeOptions: getStrokeOptions(par),
         putts: 2,
         penalties: 0,
@@ -367,6 +374,10 @@ Page({
     if (this.data.isReadOnly) return;
     if (!this.data.courseName) {
       wx.showToast({ title: '请选择球场', icon: 'none' });
+      return;
+    }
+    if (!this.data.totalPar) {
+      wx.showToast({ title: '请先维护球场标准杆', icon: 'none' });
       return;
     }
 

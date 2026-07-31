@@ -119,7 +119,7 @@ Page({
   async loadVouchers() {
     const vouchers = await service.getVouchers();
     const typeMap = { sale: '销售卡', trial: '体验卡', benefit: '福利包', blank: '空卡' };
-    const statusMap = { active: '可兑换', used: '已兑换', inactive: '未激活', pending: '待处理' };
+    const statusMap = { active: '可兑换', used: '已兑换', inactive: '未激活', pending: '待处理', redeeming: '兑换中' };
     const decorated = (vouchers || []).map(item => {
       const expired = isExpired(item);
       return {

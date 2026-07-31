@@ -24,8 +24,7 @@ const MOCK_SLOTS_VERSION = '20260730_05_24_paired_booked';
 
 const MOCK_CERTIFIED_SCORECARD_ID = 'sc_mock_certified_zhangsan_001';
 
-const DEFAULT_COURSE_PARS = Array.from({ length: 18 }, () => 4);
-const DEFAULT_NINE_PARS = Array.from({ length: 9 }, () => 4);
+const DEFAULT_COURSE_PARS = [];
 
 const JINGJINJI_COURSE_SEEDS = [
   ['course_bj_beijing_gc', '北京高尔夫俱乐部', '北京', '北京', '顺义区'],
@@ -110,27 +109,20 @@ function buildCourse(id, name, province, city, pars, features, address = '', lat
 }
 
 function buildRegionalCourse([id, name, province, city, address]) {
-  const front = { name: '前9', pars: DEFAULT_NINE_PARS, totalPar: 36 };
-  const back = { name: '后9', pars: DEFAULT_NINE_PARS, totalPar: 36 };
-  const pars = [...front.pars, ...back.pars];
   return {
     ...buildCourse(
       id,
       name,
       province,
       city,
-      pars,
-      '京津冀球场库第一版；逐洞标准杆为 Par36+36 占位，老板可在后台按实际记分卡修正。',
+      [],
+      '京津冀球场名录第一版；逐洞标准杆待老板按真实记分卡维护，维护前不会自动带入记分。',
       address
     ),
-    nineHoleCourses: [front, back],
-    courseCombinations: [{
-      name: '前9+后9',
-      parts: ['前9', '后9'],
-      pars,
-      holeCount: 18,
-      totalPar: 72
-    }],
+    holeCount: 18,
+    nineHoleCourses: [],
+    courseCombinations: [],
+    parStatus: 'pending',
     dataSource: 'regional_seed_2026'
   };
 }
@@ -175,7 +167,7 @@ function getDefaultCourses() {
       '',
       '',
       DEFAULT_COURSE_PARS,
-      '临时占位球场。公共数据缺失时可先用默认标准杆，老板后续手动维护。'
+      '临时球场。请先维护真实逐洞标准杆，再用于记分。'
     ),
     ...JINGJINJI_COURSE_SEEDS.map(buildRegionalCourse)
   ];
@@ -620,14 +612,13 @@ function normalizeCourse(data) {
 
 function parseCoursePars(value) {
   if (Array.isArray(value)) {
-    return value.map(item => Number(item || 4)).slice(0, 18);
+    return value.map(item => Number(item || 0)).filter(item => item > 0).slice(0, 18);
   }
   const list = String(value || '')
     .split(/[\s,，、/]+/)
     .map(item => Number(item))
     .filter(item => item > 0);
   const pars = list.length > 0 ? list : DEFAULT_COURSE_PARS;
-  while (pars.length < 18) pars.push(4);
   return pars.slice(0, 18);
 }
 
@@ -635,8 +626,28 @@ function ensureMockCourses() {
   const courses = wx.getStorageSync(STORAGE_KEYS.COURSES) || [];
   const defaults = getDefaultCourses();
   defaults.forEach(defaultCourse => {
-    const exists = courses.some(item => item._id === defaultCourse._id || item.name === defaultCourse.name);
-    if (!exists) courses.push(defaultCourse);
+    const index = courses.findIndex(item => item._id === defaultCourse._id || item.name === defaultCourse.name);
+    if (index < 0) {
+      courses.push(defaultCourse);
+      return;
+    }
+    const existing = courses[index];
+    const pars = existing.pars || [];
+    const shouldRepair = defaultCourse.dataSource === 'regional_seed_2026'
+      && (existing.dataSource === 'regional_seed_2026' || pars.every(par => Number(par) === 4));
+    if (shouldRepair) {
+      courses[index] = {
+        ...existing,
+        pars: defaultCourse.pars,
+        totalPar: defaultCourse.totalPar,
+        nineHoleCourses: defaultCourse.nineHoleCourses,
+        courseCombinations: defaultCourse.courseCombinations,
+        parStatus: defaultCourse.parStatus,
+        features: defaultCourse.features,
+        dataSource: defaultCourse.dataSource,
+        updatedAt: new Date().toISOString()
+      };
+    }
   });
   wx.setStorageSync(STORAGE_KEYS.COURSES, courses);
 }

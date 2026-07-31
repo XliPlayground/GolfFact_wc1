@@ -574,14 +574,26 @@ module.exports = {
     const seeds = mock.getRegionalCourseSeeds();
     if (!USE_CLOUD) {
       const existing = mock.getCourses();
-      const existingNames = existing.map(item => item.name);
       let imported = 0;
+      let updated = 0;
+      let skipped = 0;
       for (const seed of seeds) {
-        if (existingNames.includes(seed.name)) continue;
+        const current = existing.find(item => item.name === seed.name);
+        if (current) {
+          const pars = current.pars || [];
+          const shouldRepair = current.dataSource === 'regional_seed_2026' || pars.every(par => Number(par) === 4);
+          if (!shouldRepair) {
+            skipped += 1;
+            continue;
+          }
+          await mock.saveCourse({ ...seed, _id: current._id });
+          updated += 1;
+          continue;
+        }
         await mock.saveCourse(seed);
         imported += 1;
       }
-      return { success: true, data: { imported, skipped: seeds.length - imported } };
+      return { success: true, data: { imported, updated, skipped } };
     }
 
     try {
