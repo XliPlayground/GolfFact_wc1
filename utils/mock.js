@@ -25,6 +25,62 @@ const MOCK_SLOTS_VERSION = '20260730_05_24_paired_booked';
 const MOCK_CERTIFIED_SCORECARD_ID = 'sc_mock_certified_zhangsan_001';
 
 const DEFAULT_COURSE_PARS = Array.from({ length: 18 }, () => 4);
+const DEFAULT_NINE_PARS = Array.from({ length: 9 }, () => 4);
+
+const JINGJINJI_COURSE_SEEDS = [
+  ['course_bj_beijing_gc', '北京高尔夫俱乐部', '北京', '北京', '顺义区'],
+  ['course_bj_country', '北京乡村高尔夫俱乐部', '北京', '北京', '顺义区'],
+  ['course_bj_beichen', '北京北辰高尔夫俱乐部', '北京', '北京', '朝阳区'],
+  ['course_bj_huanggang', '北京黄港国际高尔夫俱乐部', '北京', '北京', '朝阳区'],
+  ['course_bj_grand_canal', '北京大运河高尔夫俱乐部', '北京', '北京', '通州区'],
+  ['course_bj_longxi', '北京龙熙温泉高尔夫俱乐部', '北京', '北京', '大兴区'],
+  ['course_bj_orient_pearl', '北京东方明珠乡村高尔夫俱乐部', '北京', '北京', '顺义区'],
+  ['course_bj_changyang', '北京长阳国际高尔夫俱乐部', '北京', '北京', '房山区'],
+  ['course_bj_golden_river', '北京金色河畔高尔夫俱乐部', '北京', '北京', '朝阳区'],
+  ['course_bj_orient_sun_city', '北京东方太阳城高尔夫俱乐部', '北京', '北京', '顺义区'],
+  ['course_bj_honghua', '北京鸿华国际高尔夫俱乐部', '北京', '北京', '朝阳区'],
+  ['course_bj_cbd', '北京CBD国际高尔夫俱乐部', '北京', '北京', '朝阳区'],
+  ['course_bj_lake_9', '北湖9号国际高尔夫俱乐部', '北京', '北京', '朝阳区'],
+  ['course_bj_reignwood', '华彬庄园国际高尔夫俱乐部', '北京', '北京', '昌平区'],
+  ['course_bj_yanqi_lake', '通盈雁栖湖高尔夫俱乐部', '北京', '北京', '怀柔区'],
+  ['course_bj_nicklaus', '北京尼克劳斯俱乐部', '北京', '北京', '通州区'],
+  ['course_bj_qinghewan', '清河湾高尔夫乡村俱乐部', '北京', '北京', '昌平区'],
+  ['course_bj_tianan_holiday', '北京天安假日高尔夫俱乐部', '北京', '北京', '大兴区'],
+  ['course_bj_orient_tianxing', '北京东方天星乡村俱乐部', '北京', '北京', '朝阳区'],
+  ['course_bj_jindi', '北京金帝高尔夫俱乐部', '北京', '北京', '房山区'],
+  ['course_bj_yuyang', '北京渔阳国际高尔夫俱乐部', '北京', '北京', '平谷区'],
+  ['course_bj_yanxi', '北京燕西高尔夫俱乐部', '北京', '北京', '海淀区'],
+  ['course_bj_bojueyuan', '北京伯爵园高尔夫俱乐部', '北京', '北京', '顺义区'],
+  ['course_tj_international_hot_spring', '天津国际温泉高尔夫球会', '天津', '天津', '空港经济区'],
+  ['course_tj_warner', '天津华纳国际高尔夫俱乐部', '天津', '天津', '滨海新区'],
+  ['course_tj_panshan', '天津蓟县盘山高尔夫俱乐部', '天津', '天津', '蓟州区'],
+  ['course_tj_yangliuqing', '天津杨柳青森林高尔夫球会', '天津', '天津', '西青区'],
+  ['course_tj_tuanbo_lake', '天津松江团泊湖高尔夫俱乐部', '天津', '天津', '静海区'],
+  ['course_tj_kingkey', '天津京基乡村高尔夫俱乐部', '天津', '天津', '津南区'],
+  ['course_tj_longhai', '天津生态城国际乡村俱乐部', '天津', '天津', '滨海新区'],
+  ['course_tj_aroma', '天津阿罗马高尔夫俱乐部', '天津', '天津', '滨海新区'],
+  ['course_tj_binhai_forest', '天津滨海森林高尔夫俱乐部', '天津', '天津', '滨海新区'],
+  ['course_hebei_huatang', '华堂国际高尔夫俱乐部', '河北', '廊坊', '三河'],
+  ['course_hebei_zhuozhou_jingnan', '涿州京南乡村俱乐部', '河北', '保定', '涿州'],
+  ['course_hebei_tokyo_abc', '涿州东京都高尔夫俱乐部ABC场', '河北', '保定', '涿州'],
+  ['course_hebei_jingdu_ab', '涿州京都高尔夫俱乐部AB场', '河北', '保定', '涿州'],
+  ['course_hebei_jingdu_cdef', '涿州京都高尔夫俱乐部CDEF场', '河北', '保定', '涿州'],
+  ['course_hebei_zhongcheng', '石家庄众诚国际高尔夫俱乐部', '河北', '石家庄', ''],
+  ['course_hebei_fenghe', '廊坊凤河国际高尔夫俱乐部', '河北', '廊坊', ''],
+  ['course_hebei_elite_a', '新奥艾力枫社高尔夫俱乐部A场', '河北', '廊坊', ''],
+  ['course_hebei_elite_b', '新奥艾力枫社高尔夫俱乐部B场', '河北', '廊坊', ''],
+  ['course_hebei_songshi', '松石高尔夫俱乐部', '河北', '廊坊', ''],
+  ['course_hebei_qhd_poly', '秦皇岛保利高尔夫俱乐部', '河北', '秦皇岛', ''],
+  ['course_hebei_gold_coast_forest', '荣盛黄金海岸森林高尔夫俱乐部', '河北', '秦皇岛', ''],
+  ['course_hebei_meilu', '美芦庄园高尔夫球会', '河北', '保定', ''],
+  ['course_hebei_tangshan_nanhu', '唐山南湖国际高尔夫俱乐部', '河北', '唐山', ''],
+  ['course_hebei_caofeidian_wetland', '唐山曹妃甸湿地国际高尔夫俱乐部', '河北', '唐山', ''],
+  ['course_hebei_caofei_lake', '唐山曹妃湖高尔夫俱乐部', '河北', '唐山', ''],
+  ['course_hebei_cangzhou_mingren', '沧州名人高尔夫俱乐部', '河北', '沧州', ''],
+  ['course_hebei_hutuohe', '石家庄滹沱河高尔夫俱乐部', '河北', '石家庄', ''],
+  ['course_hebei_jinghua', '京华高尔夫俱乐部', '河北', '廊坊', '燕郊'],
+  ['course_hebei_dazong', '大宗高尔夫俱乐部', '河北', '廊坊', '燕郊']
+];
 
 function buildCourse(id, name, province, city, pars, features, address = '', latitude = '', longitude = '') {
   const holeCount = pars.length;
@@ -50,6 +106,32 @@ function buildCourse(id, name, province, city, pars, features, address = '', lat
     status: 'active',
     createdAt: '2026-07-31T00:00:00.000Z',
     updatedAt: '2026-07-31T00:00:00.000Z'
+  };
+}
+
+function buildRegionalCourse([id, name, province, city, address]) {
+  const front = { name: '前9', pars: DEFAULT_NINE_PARS, totalPar: 36 };
+  const back = { name: '后9', pars: DEFAULT_NINE_PARS, totalPar: 36 };
+  const pars = [...front.pars, ...back.pars];
+  return {
+    ...buildCourse(
+      id,
+      name,
+      province,
+      city,
+      pars,
+      '京津冀球场库第一版；逐洞标准杆为 Par36+36 占位，老板可在后台按实际记分卡修正。',
+      address
+    ),
+    nineHoleCourses: [front, back],
+    courseCombinations: [{
+      name: '前9+后9',
+      parts: ['前9', '后9'],
+      pars,
+      holeCount: 18,
+      totalPar: 72
+    }],
+    dataSource: 'regional_seed_2026'
   };
 }
 
@@ -94,7 +176,8 @@ function getDefaultCourses() {
       '',
       DEFAULT_COURSE_PARS,
       '临时占位球场。公共数据缺失时可先用默认标准杆，老板后续手动维护。'
-    )
+    ),
+    ...JINGJINJI_COURSE_SEEDS.map(buildRegionalCourse)
   ];
 }
 
@@ -500,6 +583,8 @@ function ensureMockActivityDefaults() {
 function normalizeCourse(data) {
   const pars = parseCoursePars(data.pars || data.parsText || DEFAULT_COURSE_PARS);
   const holeCount = Number(data.holeCount || pars.length || 18);
+  const nineHoleCourses = Array.isArray(data.nineHoleCourses) ? data.nineHoleCourses : [];
+  const courseCombinations = Array.isArray(data.courseCombinations) ? data.courseCombinations : [];
   return {
     name: data.name || '未命名球场',
     province: data.province || '',
@@ -510,6 +595,8 @@ function normalizeCourse(data) {
     holeCount,
     pars,
     totalPar: pars.reduce((sum, par) => sum + Number(par || 0), 0),
+    nineHoleCourses,
+    courseCombinations,
     features: data.features || '',
     holeMaps: (data.holeMaps || pars.map((par, index) => ({
       holeNumber: index + 1,

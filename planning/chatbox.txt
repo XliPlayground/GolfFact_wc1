@@ -646,3 +646,13 @@ FEATURE2=product_category_product_crud_on_off_sale,coach_crud_and_bill_summary
 RULE=user_booking_only_active_bays_open_slots,shop_only_on_sale_products,linked_coaches_only_active
 VERIFY=node_c_new_admin_pages_service_mock_booking_shop_ok,app_json_ok,wxml_high_risk_scan_clean
 -- END E3D9B816 8 --
+[Codex] 8
+GPT-5 Codex, 2026-07-31 16:06 CST, F71E2A6B, 8
+TYPE=CHANGE STATUS=APPLIED
+SCOPE=appointment_timer_and_jingjinji_course_units
+CHANGED=cloudfunctions/appointmentAction.*|cloudfunctions/initData/index.js|pages/admin/courses.*|pages/admin/activities.js|pages/scorecard/edit.js|utils/mock.js|utils/service.js|docs/setup.md
+FEATURE=hourly_timer_settle_expired_appointments
+FEATURE2=course_model_9hole_units_and_18hole_combinations,activity_scorecard_picker_expands_combinations
+DATA=jingjinji_course_seed_first_batch_with_par36_plus_36_placeholders
+VERIFY=node_c_initData_appointmentAction_courses_activities_scorecard_mock_service_ok,wxml_high_risk_scan_clean
+-- END F71E2A6B 8 --

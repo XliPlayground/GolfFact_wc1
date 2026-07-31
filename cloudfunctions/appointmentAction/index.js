@@ -256,6 +256,7 @@ async function settleExpiredAppointments() {
 
 exports.main = async (event) => {
   try {
+    if (!event || !event.action) return settleExpiredAppointments(event || {});
     if (event.action === 'create') return createAppointment(event);
     if (event.action === 'updateStatus') return updateAppointmentStatus(event);
     if (event.action === 'settleExpired') return settleExpiredAppointments(event);

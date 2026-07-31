@@ -550,7 +550,7 @@ module.exports = {
     }
     if (data._id) {
       return tryCloudWrite(
-        () => db.update('courses', data._id, data),
+        () => db.update('courses', data._id, withoutId(data)),
         () => mock.saveCourse(data)
       );
     }

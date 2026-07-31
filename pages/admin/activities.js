@@ -22,6 +22,26 @@ function splitDateTime(value, fallbackDate, fallbackClock) {
   };
 }
 
+function expandCourseOptions(courses) {
+  const rows = [];
+  (courses || []).forEach(course => {
+    rows.push(course);
+    (course.courseCombinations || []).forEach(combo => {
+      rows.push({
+        ...course,
+        _id: `${course._id}::${combo.name}`,
+        parentCourseId: course._id,
+        name: `${course.name} ${combo.name}`,
+        pars: combo.pars || [],
+        totalPar: combo.totalPar || 0,
+        courseCombinationName: combo.name,
+        courseCombinationParts: combo.parts || []
+      });
+    });
+  });
+  return rows;
+}
+
 function createEmptyForm() {
   const today = getTodayText();
   return {
@@ -81,10 +101,11 @@ Page({
   },
 
   async loadData() {
-    const [activities, courses] = await Promise.all([
+    const [activities, rawCourses] = await Promise.all([
       service.getActivities(),
       service.getCourses()
     ]);
+    const courses = expandCourseOptions(rawCourses || []);
     const decorated = (activities || []).map(item => this.decorateActivity(item));
     this.setData({
       allActivities: decorated,
@@ -245,6 +266,8 @@ Page({
     const form = {
       ...this.data.form,
       courseId: course ? course._id : '',
+      parentCourseId: course ? (course.parentCourseId || course._id) : '',
+      courseCombinationName: course ? (course.courseCombinationName || '') : '',
       location: course ? course.name : this.data.form.location
     };
     this.setData({

@@ -1,5 +1,12 @@
 {
   "permissions": {
     "openapi": []
-  }
+  },
+  "triggers": [
+    {
+      "name": "settleExpiredAppointmentsHourly",
+      "type": "timer",
+      "config": "0 0 * * * * *"
+    }
+  ]
 }

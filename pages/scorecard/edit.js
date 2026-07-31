@@ -4,6 +4,26 @@ const mock = require('../../utils/mock');
 const NUMBER_OPTIONS = Array.from({ length: 11 }, (_, index) => index);
 const PLACEHOLDER_COURSE = { _id: '', name: '请选择球场', pars: [] };
 
+function expandCourseOptions(courses) {
+  const rows = [];
+  (courses || []).forEach(course => {
+    rows.push(course);
+    (course.courseCombinations || []).forEach(combo => {
+      rows.push({
+        ...course,
+        _id: `${course._id}::${combo.name}`,
+        parentCourseId: course._id,
+        name: `${course.name} ${combo.name}`,
+        pars: combo.pars || [],
+        totalPar: combo.totalPar || 0,
+        courseCombinationName: combo.name,
+        courseCombinationParts: combo.parts || []
+      });
+    });
+  });
+  return rows;
+}
+
 function getStrokeOptions(par) {
   const max = Math.max(Number(par || 4) * 2, 1);
   return Array.from({ length: max + 1 }, (_, index) => index);
@@ -68,7 +88,7 @@ Page({
   },
 
   async loadCourses() {
-    const courses = await service.getCourses();
+    const courses = expandCourseOptions(await service.getCourses());
     const list = [PLACEHOLDER_COURSE, ...(courses || [])];
     this.setData({
       courses: list,
