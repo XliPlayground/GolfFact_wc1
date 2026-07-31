@@ -137,8 +137,14 @@ Page({
           return;
         }
         const data = result.data || {};
-        wx.showToast({ title: `导入${data.imported || 0}个`, icon: 'success' });
-        this.loadData();
+        wx.showModal({
+          title: '导入完成',
+          content: `新增 ${data.imported || 0} 个，跳过 ${data.skipped || 0} 个。`,
+          showCancel: false,
+          success: () => {
+            this.loadData();
+          }
+        });
       }
     });
   },

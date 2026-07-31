@@ -665,3 +665,12 @@ FIX=existing_cloud_db_does_not_auto_receive_initData_seed
 FEATURE=admin_courses_incremental_import_jingjinji_without_clearing_data
 VERIFY=node_c_courses_mock_service_ok,wxml_high_risk_scan_clean
 -- END A12D0F4E 6 --
+[Codex] 6
+GPT-5 Codex, 2026-07-31 16:20 CST, 7C4E9B21, 6
+TYPE=FIX STATUS=APPLIED
+SCOPE=course_import_cloud_permission
+CHANGED=cloudfunctions/courseAction/*|utils/service.js|pages/admin/courses.js|docs/setup.md
+FIX=client_side_course_import_can_fail_due_database_permissions
+FEATURE=courseAction_importRegionalCourses_cloud_function,import_result_modal
+VERIFY=node_c_courseAction_service_courses_ok,json_ok
+-- END 7C4E9B21 6 --

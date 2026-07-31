@@ -41,6 +41,7 @@
    - `cloudfunctions/voucherAction`
    - `cloudfunctions/userAction`
    - `cloudfunctions/appointmentAction`
+   - `cloudfunctions/courseAction`
 4. 等待部署完成
 
 ### 4. 运行初始化云函数
