@@ -789,3 +789,12 @@ FIX=replace_wxacode_with_standard_qr_png_containing_gf_token
 CAUSE=wechat_mini_program_code_does_not_decode_to_token_in_in_app_scan
 VERIFY=node_c_voucherAction_service_adminVouchers_ok,json_ok,wxml_scan_clean
 -- END C5A9E274 6 --
+
+[Codex] 4
+GPT-5 Codex, 2026-07-31 18:58 CST, 4A0E9B7C, 4
+TYPE=FIX STATUS=APPLIED
+SCOPE=booking_slots_invisible
+CHANGED=pages/booking/index.js|pages/booking/index.wxml|utils/service.js
+FIX=show_fallback_05_24_slots_when_cloud_slots_empty,default_bays_when_cloud_bays_empty,avoid_cloud_create_for_fallback_slots
+VERIFY=node_c_bookingIndex_service_ok,wxml_scan_clean
+-- END 4A0E9B7C 4 --

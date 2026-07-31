@@ -747,6 +747,9 @@ module.exports = {
     if (!USE_CLOUD) {
       return mock.createAppointment(data);
     }
+    if ((data.timeSlotIds || []).some(id => String(id).indexOf('fallback_') === 0)) {
+      return mock.createAppointment(data);
+    }
     try {
       return await callAppointmentAction({ action: 'create', data });
     } catch (err) {

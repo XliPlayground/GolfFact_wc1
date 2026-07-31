@@ -38,6 +38,8 @@ Page({
     showSelectedRangeText: false,
     showRangeReset: false,
     selectedDurationText: '',
+    showSlotsEmpty: false,
+    slotsEmptyText: '',
     submitButtonClass: 'btn-primary disabled',
     selfTypeClass: 'type-item active',
     teachingTypeClass: 'type-item'
@@ -56,7 +58,10 @@ Page({
       };
     });
 
-    const bays = (await service.getBays()).filter(item => item.status === 'active');
+    let bays = (await service.getBays()).filter(item => item.status === 'active');
+    if (bays.length === 0) {
+      bays = mock.getBays().filter(item => item.status === 'active');
+    }
     const coaches = await service.getLinkedCoaches(user._id);
 
     this.setData({
@@ -80,6 +85,9 @@ Page({
   async loadSlots() {
     const { selectedDate, selectedBayId, bookingType } = this.data;
     let slots = await service.getTimeSlots(selectedDate, selectedBayId);
+    if (!Array.isArray(slots) || slots.length === 0) {
+      slots = this.buildFallbackSlots(selectedDate, selectedBayId);
+    }
     
     // 培训模式下只显示教学时段，自助模式下只显示自助时段
     slots = slots.filter(s => s.type === bookingType && s.isOpen !== false);
@@ -92,8 +100,40 @@ Page({
     }));
     slots = this.decorateSlots(slots);
 
-    this.setData({ slots });
+    this.setData({
+      slots,
+      showSlotsEmpty: slots.length === 0,
+      slotsEmptyText: bookingType === 'teaching' ? '暂无教学时段，请切换自助练球或联系老板排课。' : '暂无可约时段，请联系老板生成当天时段。'
+    });
     this.calculateSummary();
+  },
+
+  buildFallbackSlots(date, bayId) {
+    if (!date || !bayId) return [];
+    const rows = [];
+    for (let h = 5; h < 24; h++) {
+      for (let m = 0; m < 60; m += 30) {
+        const startTime = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+        const endMin = m + 30;
+        const endH = endMin >= 60 ? h + 1 : h;
+        const endM = endMin >= 60 ? 0 : endMin;
+        const endTime = `${String(endH).padStart(2, '0')}:${String(endM).padStart(2, '0')}`;
+        const isTeaching = h >= 17 && h <= 19;
+        rows.push({
+          _id: `fallback_${bayId}_${date}_${startTime.replace(':', '')}`,
+          bayId,
+          date,
+          startTime,
+          endTime,
+          slotMinutes: 30,
+          type: isTeaching ? 'teaching' : 'self',
+          isOpen: true,
+          isBooked: false,
+          source: 'fallback'
+        });
+      }
+    }
+    return rows;
   },
 
   selectDate(e) {

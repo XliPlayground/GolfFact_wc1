@@ -65,6 +65,7 @@
         <view class="slot-time">{{item.startTime}}</view>
       </view>
     </view>
+    <view wx:if="{{showSlotsEmpty}}" class="empty-hint">{{slotsEmptyText}}</view>
   </view>
 
   <!-- 需求 -->
