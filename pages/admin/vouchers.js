@@ -131,6 +131,7 @@ Page({
         typeLabel: typeMap[item.type] || item.type,
         statusText: expired && item.status !== 'used' ? '已过期' : (statusMap[item.status] || item.status),
         qrReady: Boolean(item.qrFileID),
+        isLocalOnly: String(item._id || '').indexOf('voucher_') === 0,
         metaText: item.status === 'inactive'
           ? `未设置权益 · 卡有效期至 ${item.cardValidUntil || '-'}`
           : `${item.hours}小时 · 充值后${item.validDays}天有效 · 卡至 ${item.cardValidUntil || '-'}`
@@ -256,7 +257,7 @@ Page({
       }
     }
 
-    await service.generateVoucher({
+    const result = await service.generateVoucher({
       type: mode === 'inactive' ? 'blank' : type,
       hours: mode === 'inactive' ? 0 : hours,
       validDays: mode === 'inactive' ? 0 : validDays,
@@ -265,6 +266,14 @@ Page({
       redeemLimitType: type === 'trial' ? 'once_lifetime' : 'unlimited',
       status: mode
     });
+    if (!result.success) {
+      wx.showModal({
+        title: '生成失败',
+        content: result.error || '生成卡片失败',
+        showCancel: false
+      });
+      return;
+    }
     wx.showToast({ title: mode === 'inactive' ? '空卡已生成' : '已生成', icon: 'success' });
     this.loadVouchers();
   },
@@ -469,6 +478,14 @@ Page({
       wx.showToast({ title: '未找到卡片', icon: 'none' });
       return;
     }
+    if (voucher.isLocalOnly) {
+      wx.showModal({
+        title: '本地演示卡',
+        content: '这张卡是之前云函数失败时生成的本地演示数据，云端不存在，不能生成二维码。请重新生成一张云端卡片。',
+        showCancel: false
+      });
+      return;
+    }
 
     const receipt = buildReceipt(voucher);
     wx.setClipboardData({
@@ -495,7 +512,7 @@ Page({
       return;
     }
     this.setData({ qrLoading: true });
-    const result = await service.getVoucherQr(id);
+    const result = await service.getVoucherQr(voucher);
     this.setData({ qrLoading: false });
     if (!result.success) {
       wx.showModal({

@@ -712,3 +712,23 @@ CHANGED=cloudfunctions/voucherAction/config.json|cloudfunctions/voucherAction/in
 FIX=grant_wxacode_getUnlimited_openapi_permission,use_short_cardNo_scene,show_full_qr_error_modal
 VERIFY=node_c_voucherAction_adminVouchers_ok,json_ok,wxml_scan_clean
 -- END 6C1B8D70 5 --
+
+[Codex] 4
+GPT-5 Codex, 2026-07-31 17:40 CST, D2F1A540, 4
+TYPE=FIX STATUS=APPLIED
+SCOPE=voucher_callfunction_504002_diagnostics
+CHANGED=utils/service.js|cloudfunctions/voucherAction/index.js
+FIX=explicit_cloud_env_for_voucherAction_call,better_504002_error_hint
+FEATURE=voucherAction_ping_for_deployment_check
+VERIFY=node_c_service_voucherAction_ok,json_ok
+-- END D2F1A540 4 --
+
+[Codex] 5
+GPT-5 Codex, 2026-07-31 17:49 CST, 8E0D63B1, 5
+TYPE=FIX STATUS=APPLIED
+SCOPE=voucher_qr_document_get_502005
+CHANGED=cloudfunctions/voucherAction/index.js|utils/service.js|pages/admin/vouchers.js
+FIX=avoid_local_fallback_voucher_writes,lookup_qr_target_by_cardNo_or_token,detect_local_demo_cards
+CAUSE=local_mock_voucher_ids_do_not_exist_in_cloud_recharge_vouchers
+VERIFY=node_c_voucherAction_service_adminVouchers_ok,wxml_scan_clean
+-- END 8E0D63B1 5 --

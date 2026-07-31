@@ -303,12 +303,33 @@ async function redeem(event) {
 }
 
 async function getQr(event) {
-  const { id } = event;
-  if (!id) return { success: false, error: '缺少卡片 ID' };
+  const { id, cardNo, token } = event;
+  if (!id && !cardNo && !token) return { success: false, error: '缺少卡片 ID 或卡号' };
 
-  const current = await db.collection('recharge_vouchers').doc(id).get();
-  const voucher = current.data;
-  if (!voucher) return { success: false, error: '卡片不存在' };
+  let voucher = null;
+  if (id) {
+    try {
+      const current = await db.collection('recharge_vouchers').doc(id).get();
+      voucher = current.data;
+    } catch (err) {
+      voucher = null;
+    }
+  }
+  if (!voucher && cardNo) {
+    const byCardNo = await db.collection('recharge_vouchers')
+      .where({ tenantId: TENANT_ID, cardNo: normalizeCode(cardNo) })
+      .limit(1)
+      .get();
+    voucher = byCardNo.data[0] || null;
+  }
+  if (!voucher && token) {
+    const byToken = await db.collection('recharge_vouchers')
+      .where({ tenantId: TENANT_ID, token: normalizeCode(token) })
+      .limit(1)
+      .get();
+    voucher = byToken.data[0] || null;
+  }
+  if (!voucher) return { success: false, error: '云端找不到这张卡。请先重新生成云端卡片，或确认 voucherAction 云函数部署成功后刷新列表。' };
   if (voucher.qrFileID) return { success: true, data: { qrFileID: voucher.qrFileID, qrScene: voucher.qrScene || '' } };
   if (!voucher.token) return { success: false, error: '卡片缺少兑换码' };
 
@@ -340,6 +361,7 @@ async function getQr(event) {
 
 exports.main = async (event) => {
   try {
+    if (event.action === 'ping') return { success: true, data: { name: 'voucherAction', time: new Date().toISOString() } };
     if (event.action === 'generate') return generate(event);
     if (event.action === 'update') return update(event);
     if (event.action === 'delete') return deleteVoucher(event);

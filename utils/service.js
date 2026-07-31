@@ -5,6 +5,7 @@ const db = require('./db');
 const mock = require('./mock');
 
 const USE_CLOUD = true; // 云函数和数据库初始化完成后使用云端，失败自动回退 mock
+const CLOUD_ENV = 'cloud1-d8gwt560627562aff';
 const TENANT_ID = 'golfact_default';
 
 function normalizeSettings(rows) {
@@ -68,6 +69,7 @@ async function getCloudOpenid() {
 async function callVoucherAction(data) {
   const res = await wx.cloud.callFunction({
     name: 'voucherAction',
+    config: { env: CLOUD_ENV },
     data
   });
   return res.result || { success: false, error: '卡片操作失败' };
@@ -843,8 +845,8 @@ module.exports = {
     try {
       return await callVoucherAction({ action: 'generate', options });
     } catch (err) {
-      console.warn('cloud generateVoucher fallback:', err);
-      return mock.generateVoucher(options);
+      console.warn('cloud generateVoucher failed:', err);
+      return { success: false, error: err.message || err.errMsg || '生成卡片失败，请确认 voucherAction 云函数已部署' };
     }
   },
 
@@ -869,8 +871,8 @@ module.exports = {
     try {
       return await callVoucherAction({ action: 'update', id, patch });
     } catch (err) {
-      console.warn('cloud updateVoucher fallback:', err);
-      return mock.updateVoucher(id, patch);
+      console.warn('cloud updateVoucher failed:', err);
+      return { success: false, error: err.message || err.errMsg || '更新卡片失败，请确认 voucherAction 云函数已部署' };
     }
   },
 
@@ -881,8 +883,8 @@ module.exports = {
     try {
       return await callVoucherAction({ action: 'delete', id });
     } catch (err) {
-      console.warn('cloud deleteVoucher fallback:', err);
-      return mock.deleteVoucher(id);
+      console.warn('cloud deleteVoucher failed:', err);
+      return { success: false, error: err.message || err.errMsg || '删除卡片失败，请确认 voucherAction 云函数已部署' };
     }
   },
 
@@ -893,8 +895,8 @@ module.exports = {
     try {
       return await callVoucherAction({ action: 'extend', id, cardValidUntil });
     } catch (err) {
-      console.warn('cloud extendVoucher fallback:', err);
-      return mock.extendVoucher(id, cardValidUntil);
+      console.warn('cloud extendVoucher failed:', err);
+      return { success: false, error: err.message || err.errMsg || '延期卡片失败，请确认 voucherAction 云函数已部署' };
     }
   },
 
@@ -917,20 +919,31 @@ module.exports = {
     try {
       return await callVoucherAction({ action: 'activate', options });
     } catch (err) {
-      console.warn('cloud activateVouchers fallback:', err);
-      return mock.activateVouchers(options);
+      console.warn('cloud activateVouchers failed:', err);
+      return { success: false, error: err.message || err.errMsg || '激活卡片失败，请确认 voucherAction 云函数已部署' };
     }
   },
 
-  async getVoucherQr(id) {
+  async getVoucherQr(voucher) {
     if (!USE_CLOUD) {
       return { success: false, error: '本地模式不能生成小程序码' };
     }
     try {
-      return await callVoucherAction({ action: 'getQr', id });
+      const payload = typeof voucher === 'string' ? { id: voucher } : (voucher || {});
+      return await callVoucherAction({
+        action: 'getQr',
+        id: payload._id || payload.id || '',
+        cardNo: payload.cardNo || '',
+        token: payload.token || ''
+      });
     } catch (err) {
       console.warn('cloud getVoucherQr failed:', err);
-      return { success: false, error: err.message || '生成小程序码失败' };
+      const code = err.errCode || err.errcode || '';
+      const message = err.message || err.errMsg || String(err);
+      const hint = String(code) === '-504002' || message.indexOf('-504002') >= 0
+        ? '云函数调用失败：请确认 voucherAction 已部署到 cloud1-d8gwt560627562aff，并选择“上传并部署：云端安装依赖”。'
+        : '生成小程序码失败';
+      return { success: false, error: `${hint}\n${message}` };
     }
   },
 
