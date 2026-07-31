@@ -703,3 +703,12 @@ FEATURE=wechat_wxacode_generation_for_vouchers,admin_qr_preview_save_copy,scene_
 NOTE=uses_official_mini_program_code_with_scene_code_token,no_external_qr_service
 VERIFY=node_c_voucherAction_service_adminVouchers_redeem_ok,wxml_high_risk_scan_clean
 -- END A7F4C91D 6 --
+
+[Codex] 5
+GPT-5 Codex, 2026-07-31 17:31 CST, 6C1B8D70, 5
+TYPE=FIX STATUS=APPLIED
+SCOPE=voucher_qr_generation_failure
+CHANGED=cloudfunctions/voucherAction/config.json|cloudfunctions/voucherAction/index.js|pages/admin/vouchers.js
+FIX=grant_wxacode_getUnlimited_openapi_permission,use_short_cardNo_scene,show_full_qr_error_modal
+VERIFY=node_c_voucherAction_adminVouchers_ok,json_ok,wxml_scan_clean
+-- END 6C1B8D70 5 --

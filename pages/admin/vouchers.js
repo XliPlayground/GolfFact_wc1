@@ -498,7 +498,11 @@ Page({
     const result = await service.getVoucherQr(id);
     this.setData({ qrLoading: false });
     if (!result.success) {
-      wx.showToast({ title: result.error || '生成失败', icon: 'none' });
+      wx.showModal({
+        title: '二维码生成失败',
+        content: result.error || '生成失败，请确认 voucherAction 云函数已重新部署，并具备 wxacode.getUnlimited 权限。',
+        showCancel: false
+      });
       return;
     }
     const nextVoucher = { ...voucher, qrFileID: result.data.qrFileID, qrScene: result.data.qrScene };

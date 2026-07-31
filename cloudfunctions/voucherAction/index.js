@@ -312,7 +312,7 @@ async function getQr(event) {
   if (voucher.qrFileID) return { success: true, data: { qrFileID: voucher.qrFileID, qrScene: voucher.qrScene || '' } };
   if (!voucher.token) return { success: false, error: '卡片缺少兑换码' };
 
-  const scene = `code=${voucher.token}`;
+  const scene = `cardNo=${voucher.cardNo}`;
   if (scene.length > 32) return { success: false, error: '兑换码过长，无法生成小程序码' };
 
   const codeRes = await cloud.openapi.wxacode.getUnlimited({
