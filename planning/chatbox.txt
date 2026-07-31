@@ -732,3 +732,13 @@ FIX=avoid_local_fallback_voucher_writes,lookup_qr_target_by_cardNo_or_token,dete
 CAUSE=local_mock_voucher_ids_do_not_exist_in_cloud_recharge_vouchers
 VERIFY=node_c_voucherAction_service_adminVouchers_ok,wxml_scan_clean
 -- END 8E0D63B1 5 --
+
+[Codex] 4
+GPT-5 Codex, 2026-07-31 17:57 CST, F4B2A019, 4
+TYPE=FIX STATUS=APPLIED
+SCOPE=voucher_missing_cloud_collections
+CHANGED=cloudfunctions/voucherAction/index.js
+FIX=voucherAction_auto_creates_recharge_vouchers_and_recharge_records_if_missing
+CAUSE=cloud_database_collection_recharge_vouchers_not_created_in_current_env
+VERIFY=node_c_voucherAction_ok
+-- END F4B2A019 4 --

@@ -5,6 +5,26 @@ cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV });
 const db = cloud.database();
 const _ = db.command;
 const TENANT_ID = 'golfact_default';
+const VOUCHER_COLLECTION = 'recharge_vouchers';
+const RECHARGE_COLLECTION = 'recharge_records';
+
+async function ensureCollection(name) {
+  try {
+    await db.createCollection(name);
+  } catch (err) {
+    if (err && err.errCode !== -502005) {
+      const message = String(err.message || err.errMsg || '');
+      if (message.indexOf('already exists') < 0 && message.indexOf('collection already exists') < 0) {
+        throw err;
+      }
+    }
+  }
+}
+
+async function ensureVoucherCollections() {
+  await ensureCollection(VOUCHER_COLLECTION);
+  await ensureCollection(RECHARGE_COLLECTION);
+}
 
 function formatDate(date) {
   const year = date.getFullYear();
@@ -70,6 +90,7 @@ async function getUser(userId) {
 }
 
 async function generate(event) {
+  await ensureVoucherCollections();
   const options = event.options || {};
   const count = Math.min(Math.max(Number(options.count || 1), 1), 50);
   const now = new Date().toISOString();
@@ -124,6 +145,7 @@ async function generate(event) {
 }
 
 async function update(event) {
+  await ensureVoucherCollections();
   const { id, patch = {} } = event;
   if (!id) return { success: false, error: '缺少卡片 ID' };
 
@@ -165,6 +187,7 @@ async function extend(event) {
 }
 
 async function activate(event) {
+  await ensureVoucherCollections();
   const options = event.options || {};
   const count = Math.min(Math.max(Number(options.count || 1), 1), 50);
   const startCardNo = normalizeCode(options.cardNo);
@@ -214,6 +237,7 @@ async function activate(event) {
 }
 
 async function redeem(event) {
+  await ensureVoucherCollections();
   const voucher = await getVoucherByCode(event.code);
   if (!voucher) return { success: false, error: '兑换卡不存在' };
   if (voucher.status === 'used') return { success: false, error: '该卡已兑换' };
@@ -303,6 +327,7 @@ async function redeem(event) {
 }
 
 async function getQr(event) {
+  await ensureVoucherCollections();
   const { id, cardNo, token } = event;
   if (!id && !cardNo && !token) return { success: false, error: '缺少卡片 ID 或卡号' };
 
