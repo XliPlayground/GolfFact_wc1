@@ -4,7 +4,10 @@
       <view class="section-title">球场管理</view>
       <view class="head-subtitle">维护球场、18洞标准杆和场地特点</view>
     </view>
-    <view class="head-action" bindtap="resetForm">新建</view>
+    <view class="head-actions">
+      <view class="head-action secondary" bindtap="importRegionalCourses">导入京津冀</view>
+      <view class="head-action" bindtap="resetForm">新建</view>
+    </view>
   </view>
 
   <view wx:if="{{isEditing}}" class="card form-card">

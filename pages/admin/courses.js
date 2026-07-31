@@ -125,6 +125,24 @@ Page({
     });
   },
 
+  importRegionalCourses() {
+    wx.showModal({
+      title: '导入京津冀球场',
+      content: '会增量导入北京、天津、河北球场库，不会清空现有数据。已存在同名球场会跳过。',
+      success: async res => {
+        if (!res.confirm) return;
+        const result = await service.importRegionalCourses();
+        if (!result.success) {
+          wx.showToast({ title: result.error || '导入失败', icon: 'none' });
+          return;
+        }
+        const data = result.data || {};
+        wx.showToast({ title: `导入${data.imported || 0}个`, icon: 'success' });
+        this.loadData();
+      }
+    });
+  },
+
   selectCourse(e) {
     const id = e.currentTarget.dataset.id;
     const course = this.data.courses.find(item => item._id === id);

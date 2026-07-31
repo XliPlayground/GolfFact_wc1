@@ -570,6 +570,41 @@ module.exports = {
     );
   },
 
+  async importRegionalCourses() {
+    const seeds = mock.getRegionalCourseSeeds();
+    if (!USE_CLOUD) {
+      const existing = mock.getCourses();
+      const existingNames = existing.map(item => item.name);
+      let imported = 0;
+      for (const seed of seeds) {
+        if (existingNames.includes(seed.name)) continue;
+        await mock.saveCourse(seed);
+        imported += 1;
+      }
+      return { success: true, data: { imported, skipped: seeds.length - imported } };
+    }
+
+    try {
+      const existingRes = await db.query('courses', db.withTenant({}));
+      const existingNames = (existingRes.data || []).map(item => item.name);
+      let imported = 0;
+      let skipped = 0;
+      for (const seed of seeds) {
+        if (existingNames.includes(seed.name)) {
+          skipped += 1;
+          continue;
+        }
+        const { _id, ...payload } = seed;
+        await db.add('courses', payload);
+        imported += 1;
+      }
+      return { success: true, data: { imported, skipped } };
+    } catch (err) {
+      console.warn('cloud importRegionalCourses fallback:', err);
+      return { success: false, error: err.message || '导入失败' };
+    }
+  },
+
   async saveActivity(data) {
     if (!USE_CLOUD) {
       return mock.saveActivity(data);

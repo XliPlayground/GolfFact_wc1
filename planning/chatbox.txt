@@ -656,3 +656,12 @@ FEATURE2=course_model_9hole_units_and_18hole_combinations,activity_scorecard_pic
 DATA=jingjinji_course_seed_first_batch_with_par36_plus_36_placeholders
 VERIFY=node_c_initData_appointmentAction_courses_activities_scorecard_mock_service_ok,wxml_high_risk_scan_clean
 -- END F71E2A6B 8 --
+[Codex] 6
+GPT-5 Codex, 2026-07-31 16:11 CST, A12D0F4E, 6
+TYPE=FIX STATUS=APPLIED
+SCOPE=regional_course_incremental_import
+CHANGED=pages/admin/courses.*|utils/mock.js|utils/service.js
+FIX=existing_cloud_db_does_not_auto_receive_initData_seed
+FEATURE=admin_courses_incremental_import_jingjinji_without_clearing_data
+VERIFY=node_c_courses_mock_service_ok,wxml_high_risk_scan_clean
+-- END A12D0F4E 6 --

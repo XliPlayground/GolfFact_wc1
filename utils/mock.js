@@ -181,6 +181,10 @@ function getDefaultCourses() {
   ];
 }
 
+function getRegionalCourseSeeds() {
+  return JINGJINJI_COURSE_SEEDS.map(buildRegionalCourse);
+}
+
 function buildMockCertifiedScorecard() {
   const pars = [4, 5, 4, 3, 4, 4, 5, 3, 4, 4, 4, 3, 5, 4, 4, 5, 3, 4];
   const strokes = [4, 4, 5, 3, 3, 4, 5, 2, 4, 5, 4, 3, 4, 4, 6, 5, 3, 4];
@@ -1784,6 +1788,7 @@ module.exports = {
   saveCategory,
   getActivities,
   getCourses,
+  getRegionalCourseSeeds,
   saveCourse,
   deleteCourse,
   saveActivity,
