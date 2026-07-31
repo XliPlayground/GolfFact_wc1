@@ -1,0 +1,66 @@
+<view class="container">
+  <view wx:if="{{appointment}}" class="card detail-head">
+    <view>
+      <view class="detail-date">{{appointment.date}} {{appointment.startTime}}-{{appointment.endTime}}</view>
+      <view class="detail-meta">{{bayName}} · {{typeText}}</view>
+    </view>
+    <view class="status-tag status-{{appointment.status}}">{{statusText}}</view>
+  </view>
+
+  <view wx:if="{{appointment}}" class="card">
+    <view class="section-title">预约信息</view>
+    <view class="info-row">
+      <view class="info-label">扣除时长</view>
+      <view class="info-value">{{appointment.deductedHoursText}}</view>
+    </view>
+    <view class="info-row">
+      <view class="info-label">结算状态</view>
+      <view class="info-value">{{appointment.settlementText}}</view>
+    </view>
+    <view class="info-row">
+      <view class="info-label">确认截止</view>
+      <view class="info-value">{{confirmUntilText}}</view>
+    </view>
+    <view class="info-row">
+      <view class="info-label">到访人数</view>
+      <view class="info-value">{{appointment.visitorCountText}}</view>
+    </view>
+    <view class="info-row">
+      <view class="info-label">服务需求</view>
+      <view class="info-value">{{requirementsText}}</view>
+    </view>
+    <view class="info-row">
+      <view class="info-label">烟灰缸</view>
+      <view class="info-value">{{ashtrayText}}</view>
+    </view>
+    <view class="info-row">
+      <view class="info-label">教练</view>
+      <view class="info-value">{{coachName}}</view>
+    </view>
+  </view>
+
+  <view wx:if="{{hasAccessCode}}" class="card">
+    <view class="section-title">门禁信息</view>
+    <view class="access-code">{{appointment.accessCode}}</view>
+  </view>
+
+  <view wx:if="{{appointment}}" class="card">
+    <view class="section-title">记录</view>
+    <view class="info-row">
+      <view class="info-label">创建时间</view>
+      <view class="info-value">{{createdAtText}}</view>
+    </view>
+    <view class="info-row">
+      <view class="info-label">结算时间</view>
+      <view class="info-value">{{settledAtText}}</view>
+    </view>
+    <view wx:if="{{appointment.extraPenaltyHours}}" class="info-row">
+      <view class="info-label">爽约追加</view>
+      <view class="info-value text-danger">{{appointment.extraPenaltyText}}</view>
+    </view>
+  </view>
+
+  <view wx:if="{{showCancel}}" class="card">
+    <view class="btn-secondary" bindtap="cancelAppointment">取消预约</view>
+  </view>
+</view>

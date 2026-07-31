@@ -1,0 +1,648 @@
+# Golfact Chatbox
+# ============================================================
+# 格式（每条发言固定结构）：
+#
+#   [AgentName] [行数]
+#   平台-模型, YYYY-MM-DD HH:MM CST, ID, [行数]
+#   正文内容...
+#   -- END [ID] [行数] --
+#
+# [行数] = 从第一行到 END 行的总行数（含首尾两行）
+# ID     = 8位随机大写字母数字，生成命令：
+#            openssl rand -hex 4 | tr 'a-f' 'A-F'
+# 时间   = 上海时区，获取命令：
+#            TZ='Asia/Shanghai' date '+%Y-%m-%d %H:%M CST'
+#
+# ============================================================
+# 操作方法：
+#
+#   追加新发言：直接在文件末尾写，不修改已有内容
+#
+#   读最新一条：
+#     tail -n $(tail -1 planning/chatbox.txt | grep -oE '[0-9]+' | tail -1) planning/chatbox.txt
+#
+#   读第N条（需先人工累加前面各条行数，得到末行行号 L）：
+#     head -n [L] planning/chatbox.txt | tail -n [该条行数]
+#
+# ============================================================
+# 规则：
+#
+#   1. 新发言只能追加到末尾，不能插入中间
+#   2. 不能修改他人的发言
+#   3. 修改自己的发言时，必须同步更新第一行和 END 行的行数
+#   4. 引用 planning/ 文件用：-> planning/文件名
+#   5. ID 用随机生成，不用内容哈希（ID 在内容里，哈希会循环依赖）
+#   6. 引用他人发言某行：>[ID:LN]，N 为该条内部行号（L1 = [AgentName] 行）
+#
+# ============================================================
+
+[Kimi] 11
+Kimi Code - kimi-k2, 2026-07-24 13:21 CST, 9B558F32, 11
+项目：Golfact 高尔夫室外打位微信小程序预约系统
+状态：
+- 技术方案：方案 A（微信小程序原生 + 微信云开发）
+- 计划文件：planning/golfact_dev_plan.md
+- 前台：预约、培训、自助、小店吧、教练展示、活动、赛事、积分、记分卡
+- 后台：用户、预约、爽约、时段折扣门禁、商品、教练、账单、活动、积分
+- 教练端：日程、账单
+- 支付：全部线下，小程序不过钱
+-- END 9B558F32 11 --
+[Kimi] 12
+Kimi Code - kimi-k2, 2026-07-24 13:21 CST, A7F32D0E, 12
+待后续 AI 或用户确认的关键事项：
+1. 小程序主体：个人/个体工商户/企业？是否认证？
+2. 爽约规则：N 小时阈值、周期内允许次数、超次惩罚方式
+3. 门禁密码策略：固定/动态/按预约生成
+4. 教练课时单价：统一价或按教练设置
+5. 自助折扣规则：固定折扣或分时段折扣
+6. 记分卡字段：是否只需打击杆数+推球杆数
+7. 设计风格：Logo、主色调、门店与教练照片
+8. 打位营业时段与每个时段长度
+-- END A7F32D0E 12 --
+[Kimi] 10
+Kimi Code - kimi-k2, 2026-07-24 13:21 CST, 66EFFB58, 10
+下一步建议：
+1. 等待用户确认上述关键事项
+2. 输出详细数据库字段表
+3. 输出页面原型/流程图
+4. 开始第一阶段开发：基础框架与核心预约
+5. 开发完成后按阶段提交体验版测试
+协作规则：新发言追加到末尾，不修改已有内容。
+-- END 66EFFB58 10 --
+[Kimi] 10
+Kimi Code - kimi-k2, 2026-07-24 13:30 CST, EE5A44E1, 10
+用户确认：
+1. 爽约阈值、门禁策略均可后台配置，支持动态调整。
+2. 支持按用户单独设置爽约规则（每个用户可不一样）。
+3. 门禁密码由后台统一设置，所有自助预约用户均显示同一密码。
+4. 门禁密码模块预留扩展接口，未来可对接智能门锁。
+5. 教练课时单价、自助折扣规则、记分卡字段、设计风格、营业时段仍待确认。
+影响：settings 集合需支持 per-user 规则覆盖；access_codes 集合预留 device_provider / lock_api 字段。
+-- END EE5A44E1 10 --
+[Kimi] 11
+Kimi Code - kimi-k2, 2026-07-24 13:35 CST, 44D41F03, 11
+CONF:
+- no_show.penalty_mode ∈ {actual,ratio} // 后台可设
+- access_code.update = manual // 后台定时人工更换
+- chatbox.style = ai-readable > human-readable
+IMPACT:
+- users.no_show_penalty_mode nullable
+- settings.no_show default {mode:ratio, value:50}
+- settings.access_code default {type:static, value:'', updated_at}
+-- END 44D41F03 11 --
+[Kimi] 7
+Kimi Code - kimi-k2, 2026-07-24 13:45 CST, D8CFEB4B, 7
+DELIVER:
+- planning/golfact_db_schema.md // 19 collections
+- covers users/admins/coaches/appointments/slots/products/activities/scorecards/bills/points/recharge/access_codes/settings
+NEXT:
+- page flow / wireframe
+- start stage1 dev after design confirm
+PENDING:
+- coach rate policy, discount policy, scorecard fields, UI theme, business hours
+-- END D8CFEB4B 7 --
+[Kimi] 10
+Kimi Code - kimi-k2, 2026-07-24 13:55 CST, 6B55BCF0, 10
+CONF:
+- mode = single-tenant + saas-ready
+- tenantId default = 'golfact_default'
+- siteName/logo/signboard/businessHours = admin configurable
+- theme = minimal green
+PENDING:
+- coach rate policy
+- discount policy
+- scorecard fields
+IMPACT:
+- add tenantId to all collections
+- settings.site {name, logoUrl, signboardUrl, businessHours}
+- settings.theme {primaryColor: '#22c55e'}
+-- END 6B55BCF0 10 --
+[Kimi] 8
+Kimi Code - kimi-k2, 2026-07-24 14:05 CST, 4B35CB24, 8
+DELIVER:
+- planning/golfact_page_flow.md // 用户/教练/管理员三端结构 + 6 个核心流程
+DEFAULTS:
+- coach rate = global 300/h, coach override allowed
+- self discount = none, admin configurable
+- scorecard = strokes + putts + penalties, fairway optional
+- business hours = 08:00-22:00, 60min slot
+- no_show = 2h threshold, 1 free/period, >1 deduct 50%
+PENDING:
+- user final confirm on defaults above
+- admin account setup
+- wechat mini program registration
+-- END 4B35CB24 8 --
+[Kimi] 11
+Kimi Code - kimi-k2, 2026-07-24 14:15 CST, 2DDDCCFA, 11
+CONF:
+- slotGranularity = 30min
+- minBookingSlots = 2 // 至少 1h
+- maxDailyBookingHours = admin configurable
+- hoursExpiry = true // 充时有效期
+- rechargeRecord {hours, expiryDate, adminId, createdAt}
+- user views own recharge+expiry; admin views all with filters
+- bottom tabs = [home, booking, scorecard, ranking, settings]
+IMPACT:
+- settings.slotMinutes = 30
+- settings.maxDailyBookingHours
+- recharge_records adds expiryDate
+- users.remainingHours -> derived from valid recharge records
+- appointments validates min 2 slots + daily limit
+- page_flow bottom tabs updated
+-- END 2DDDCCFA 11 --
+[Kimi] 8
+Kimi Code - kimi-k2, 2026-07-24 14:25 CST, B5040E30, 8
+UPDATE:
+- golfact_db_schema.md updated: recharge_records.expiryDate, slotMinutes=30, bookingRules, appointments.slots
+- golfact_page_flow.md updated: bottom tabs x5, recharge mgmt, booking rules, 30min slots
+- golfact_dev_plan.md updated: confirmed items list
+PENDING:
+- wechat mini program registration
+- admin account seed
+- start stage1 dev
+-- END B5040E30 8 --
+[Kimi] 10
+Kimi Code - kimi-k2, 2026-07-24 14:45 CST, B8FAED31, 10
+DELIVER:
+- stage1 mock framework complete
+- files: app.* + 25 page files + utils/mock.js
+- features runnable:
+  - 5-tab navigation
+  - home with quick links
+  - booking: date/bay/type/coach/slots/requirements -> confirm -> create appointment
+  - mine: profile, appointments, recharges with expiry
+  - scorecard: 18-hole input
+  - ranking: mock list
+  - shop/coach/activity/admin login placeholders
+- mock data in localStorage, no cloud yet
+NEXT:
+- replace wx.getStorageSync with wx.cloud calls after appid ready
+- implement admin dashboard CRUD
+- add real no-show penalty logic
+- integrate wechat login & getPhoneNumber
+-- END B8FAED31 10 --
+[Kimi] 6
+Kimi Code - kimi-k2, 2026-07-24 14:50 CST, DF5EED6F, 6
+CONF:
+- appid = wx46f87cd028af7e8b // from planning/appid.rtf
+UPDATE:
+- project.config.json appid updated
+NEXT:
+- open cloudbase env in wechat devtools
+- replace mock storage with cloud calls
+-- END DF5EED6F 6 --
+[Kimi] 8
+Kimi Code - kimi-k2, 2026-07-24 15:00 CST, E6B603F8, 8
+UPDATE:
+- app.js init wx.cloud env=cloud1-d8gwt560627562aff
+- utils/db.js cloud wrapper
+- utils/service.js fallback layer (USE_CLOUD=false)
+- cloudfunctions/initData seed function
+- project.config.json cloudfunctionRoot added
+NEXT:
+- deploy initData cloud function
+- run initData to create collections & seed
+- switch USE_CLOUD=true after seed ok
+- replace page mock imports with service imports
+-- END E6B603F8 8 --
+[Kimi] 8
+Kimi Code - kimi-k2, 2026-07-24 15:15 CST, B834D419, 8
+UPDATE:
+- all pages migrated from mock to service imports
+- service.js USE_CLOUD=false, fallback to mock localStorage
+- app.js mockMode=true until cloud seed done
+NEXT:
+- deploy initData cloud function
+- run initData
+- set USE_CLOUD=true and mockMode=false
+- test cloud data flow
+-- END B834D419 8 --
+[Kimi] 6
+Kimi Code - kimi-k2, 2026-07-24 15:20 CST, 94CA4ABE, 6
+DELIVER:
+- docs/setup.md // deploy initData + switch to cloud + permission guide
+- permission matrix for collections
+- index list for cloud console
+STATUS:
+- code ready for first run in wechat devtools
+- cloud switch pending user deploy initData
+-- END 94CA4ABE 6 --
+[Kimi] 10
+Kimi Code - kimi-k2, 2026-07-24 15:30 CST, BAA05040, 10
+CONF after store visit:
+- recharge: hours + expiryDate only, amount removed/optional, admin adds directly
+- coach booking: select coach when booking bay, coach gets teaching hours for billing
+- coach view: who booked me + when
+- activities: user registers, admin adds score per participant
+- ranking: best of last 5 rounds, average of last 5 rounds, personal best
+- roles: member / boss / coach
+IMPACT:
+- recharge_records.amount -> optional/null
+- appointments.coachId drives coach_hours / coach_bills
+- activity_records admin-created per participant
+- scorecards/ranking add last5Best, last5Avg, personalBest
+-- END BAA05040 10 --
+[Kimi] 7
+Kimi Code - kimi-k2, 2026-07-24 15:30 CST, 17B670CE, 7
+UPDATE:
+- pages/admin/records added // boss enters scores per activity
+- pages/coach/login + schedule added // coach sees who booked them
+- app.json registered new pages
+- admin dashboard linked to records
+- mock/initData: amount=0, golfStats, coachHours/coachRate
+- ranking now last5Best/last5Avg/personalBest
+PENDING:
+- real cloud function login (openid)
+- admin recharge page
+- deploy updated initData
+-- END 17B670CE 7 --
+[Codex] 11
+GPT-5 Codex, 2026-07-30 17:39 CST, 4E505E3B, 11
+TYPE=CONFIRM STATUS=PLANNED
+SCOPE=recharge_voucher_system
+CONF=direct_admin_recharge,sale_card,trial_card,benefit_pack,blank_card_activation,range_activation
+RULE=qr_token_only,secret_code_optional,cloud_function_redeem_once
+ADMIN_UX=prefill_from_template,scan_card_then_confirm,activate_range_by_start_card_no_and_count
+LIMITS=unlimited,once_lifetime,once_per_user,once_per_period,new_user_only,member_level
+UPDATED=planning/golfact_dev_plan.md|planning/golfact_db_schema.md|planning/golfact_page_flow.md
+NEXT=fix_mock_cloud_mode,then implement voucher MVP after core_booking_stable
+-- END 4E505E3B 11 --
+[Codex] 9
+GPT-5 Codex, 2026-07-30 17:50 CST, 3C1805CE, 9
+TYPE=FIX STATUS=APPLIED
+ISSUE=wechat_wxml_compile_error_optional_chaining
+CHANGED=pages/admin/records.wxml|pages/admin/records.js|pages/booking/confirm.js|utils/service.js|app.js
+FIX=move_picker_title_to_data,guard_participants,fix_undefined_coaches,normalize_settings_and_current_user,cloud_write_fallback_to_mock
+VERIFY=rg_no_wxml_optional_chain,node_c_service_confirm_records_app_ok
+KIMI=not_needed
+-- END 3C1805CE 9 --
+[Codex] 11
+GPT-5 Codex, 2026-07-30 18:14 CST, F19536CC, 11
+TYPE=DELIVER STATUS=APPLIED
+SCOPE=admin_mvp_recharge_appointments
+CHANGED=app.json|pages/admin/recharges.*|pages/admin/appointments.*|pages/admin/dashboard.wxml|utils/mock.js|utils/service.js|pages/mine/appointments.js
+FEATURE=admin_direct_recharge,user_list,recharge_records,appointment_admin_list,mark_completed_cancelled_no_show
+RULE=booking_pending,48h_confirm_window,auto_no_dispute_completed,no_show_default_1_5x
+MODE=USE_CLOUD_false_for_local_dev_until_cloud_seed
+DOCS=planning/golfact_dev_plan.md|planning/golfact_page_flow.md
+VERIFY=node_c_admin_appointments_mine_appointments_mock_ok
+-- END F19536CC 11 --
+[Codex] 10
+GPT-5 Codex, 2026-07-30 18:21 CST, 34FB8962, 10
+TYPE=DELIVER STATUS=APPLIED
+SCOPE=booking_visibility_rules
+CHANGED=pages/booking/index.*|pages/booking/confirm.wxml|pages/coach/index.*|pages/coach/detail.*|pages/admin/users.*|utils/mock.js|utils/service.js|app.json
+RULE=no_frontend_price,continuous_slots_min_2,linked_coaches_only
+ADMIN=users_page_can_link_member_to_coaches
+MOCK=user_001_coach_001,user_002_coach_002
+DOCS=planning/golfact_dev_plan.md|planning/golfact_page_flow.md
+VERIFY=no_price_text_in_booking_coach_wxml,node_c_booking_users_service_mock_ok
+-- END 34FB8962 10 --
+[Codex] 9
+GPT-5 Codex, 2026-07-30 18:26 CST, 53DAB21A, 9
+TYPE=DELIVER STATUS=APPLIED
+SCOPE=booking_range_selection
+CHANGED=pages/booking/index.*|utils/mock.js
+RULE=hotel_style_start_end_selection,min_2_continuous_slots,no_gap,booked_slots_visible
+HOURS=05:00-24:00
+MOCK_BOOKED=bay_001_0700_0730_1830_1900,bay_002_1000_1030_1500_1530_2100
+VERIFY=node_c_booking_mock_ok,no_price_text_in_booking_coach_wxml
+-- END 53DAB21A 9 --
+[Codex] 10
+GPT-5 Codex, 2026-07-30 18:39 CST, 3F4B99A2, 10
+TYPE=DELIVER STATUS=APPLIED
+SCOPE=booking_ui_compaction_and_mock_slots
+CHANGED=pages/booking/index.*|pages/booking/confirm.*|pages/admin/appointments.js|utils/mock.js|planning/golfact_page_flow.md|planning/golfact_db_schema.md
+RULE=mock_booked_slots_are_min_2_continuous_blocks,slots_05_to_24_with_2330_ending_2400
+UI=4_column_compact_slot_grid,booked_gray_no_text,selected_green,service_needs_single_row_scroll
+REQ=ashtray_instead_of_smoking_preference
+VERIFY=node_c_booking_confirm_admin_appointments_mock_ok,rg_no_old_smoking_text
+-- END 3F4B99A2 10 --
+[Codex] 10
+GPT-5 Codex, 2026-07-30 19:15 CST, AF54AF57, 10
+TYPE=DELIVER STATUS=APPLIED
+SCOPE=scorecard_picker_autosave
+CHANGED=pages/scorecard/edit.*|pages/scorecard/index.*|utils/mock.js|utils/service.js|planning/golfact_dev_plan.md|planning/golfact_page_flow.md
+FEATURE=0_to_10_picker_for_strokes_putts_penalties,autosave_draft_on_each_change,submit_requires_course
+GPS=getLocation_records_coordinates_as_course_placeholder,map_reverse_geocode_future
+DATA=upsertScorecard_updates_same_draft_id_to_avoid_duplicates
+VERIFY=node_c_scorecard_edit_index_service_mock_ok,no_scorecard_input_bindinput
+-- END AF54AF57 10 --
+[Codex] 11
+GPT-5 Codex, 2026-07-30 19:39 CST, 81569442, 11
+TYPE=DELIVER STATUS=APPLIED
+SCOPE=home_hero_scorecard_resume_admin_settings
+CHANGED=pages/index/*|pages/scorecard/*|pages/admin/settings.*|pages/admin/dashboard.wxml|utils/mock.js|utils/service.js|app.json
+HOME=hero_visual_integrated_with_nav,title_秋の高球练习场
+SCORECARD=history_tap_to_resume_existing_draft_or_record
+ADMIN=system_settings_for_settlement_confirm_hours_and_no_show_multiplier
+DATA=mock_updateSettings_persists_noShowRule,service_getScorecards
+VERIFY=node_c_index_scorecard_admin_settings_service_mock_ok,json_ok
+-- END 81569442 11 --
+[Codex] 11
+GPT-5 Codex, 2026-07-31 08:34 CST, 4539B89E, 11
+TYPE=DELIVER STATUS=APPLIED
+SCOPE=voucher_mvp
+CHANGED=pages/admin/vouchers.*|pages/mine/redeem.*|pages/mine/index.wxml|pages/admin/dashboard.wxml|utils/mock.js|utils/service.js|app.json
+FEATURE=admin_generate_sale_trial_benefit_cards,user_redeem_by_card_no_secret,copy_card_info
+DATA=mock_recharge_vouchers,generateVoucher,getVouchers,redeemVoucher,reuse_createRecharge
+LIMIT=trial_once_lifetime,sale_benefit_unlimited
+NOTE=qr_image_not_yet_generated,path_ready_for_printing
+VERIFY=node_c_vouchers_redeem_mock_service_ok,json_ok
+-- END 4539B89E 11 --
+[Codex] 9
+GPT-5 Codex, 2026-07-31 08:49 CST, AF9DFA25, 9
+TYPE=CHANGE STATUS=APPLIED
+SCOPE=voucher_one_code_redeem
+CHANGED=utils/mock.js|utils/service.js|pages/admin/vouchers.*|pages/mine/redeem.*|planning/golfact_dev_plan.md|planning/golfact_page_flow.md|planning/golfact_db_schema.md
+RULE=single_long_token_like_jd_card,no_extra_secret_code,scan_auto_redeem
+PATH=/pages/mine/redeem?code=GF-...
+VERIFY=node_c_mock_service_vouchers_redeem_ok
+-- END AF9DFA25 9 --
+[Codex] 8
+GPT-5 Codex, 2026-07-31 09:40 CST, D329BE74, 8
+TYPE=CHANGE STATUS=APPLIED
+SCOPE=admin_voucher_print_button
+CHANGED=pages/admin/vouchers.js|pages/admin/vouchers.wxml|pages/admin/vouchers.wxss
+FEATURE=per_voucher_print_receipt_action,copies_standard_receipt_text
+LIMIT=mini_program_cannot_raw_tcp_9100_until_print_gateway
+VERIFY=node_c_pages_admin_vouchers_js,rg_print_button_bindings_ok
+-- END D329BE74 8 --
+[Codex] 8
+GPT-5 Codex, 2026-07-31 09:49 CST, C1E5234D, 8
+TYPE=CHANGE STATUS=APPLIED
+SCOPE=redeem_scan_entry
+CHANGED=pages/mine/redeem.js|pages/mine/redeem.wxml|pages/mine/redeem.wxss
+FEATURE=scan_to_redeem,paste_code,parse_raw_code_or_path_or_nested_q
+RULE=one_long_code_no_password,auto_redeem_when_code_available
+VERIFY=node_c_pages_mine_redeem_js,rg_bindings_ok
+-- END C1E5234D 8 --
+[Codex] 9
+GPT-5 Codex, 2026-07-31 09:54 CST, 268963B3, 9
+TYPE=CHANGE STATUS=APPLIED
+SCOPE=prepaid_voucher_activation
+CHANGED=pages/admin/vouchers.*|utils/mock.js|utils/service.js|planning/golfact_page_flow.md
+FEATURE=generate_inactive_blank_cards,scan_or_enter_start_card,activate_consecutive_cards
+RULE=card_no_numeric_suffix_increments,used_cards_cannot_activate,trial_once_lifetime
+FIX=batch_generate_card_numbers_no_longer_skip_sequence
+VERIFY=node_c_vouchers_service_mock,local_mock_inactive_activate_redeem_ok
+-- END 268963B3 9 --
+[Codex] 10
+GPT-5 Codex, 2026-07-31 10:19 CST, 072EDDA3, 10
+TYPE=CHANGE STATUS=APPLIED
+SCOPE=appointment_detail_member_ops
+CHANGED=pages/booking/detail.*|pages/mine/appointments.*|pages/admin/users.*|utils/mock.js|utils/service.js|planning/golfact_page_flow.md
+FEATURE=booking_detail,member_summary,recent_member_records,manual_hour_adjustment
+FIX=cancelled_booking_refunds_hours_and_releases_slots,create_booking_updates_user_list_balance
+RULE=manual_adjust_requires_reason,negative_hours_allowed_for_deduction
+VERIFY=node_c_changed_js,local_mock_create_cancel_adjust_ok
+-- END 072EDDA3 10 --
+[Codex] 10
+GPT-5 Codex, 2026-07-31 10:36 CST, 6D6F58B0, 10
+TYPE=CHANGE STATUS=APPLIED
+SCOPE=admin_crud_pending_voucher_user_appointment_filters
+CHANGED=pages/admin/vouchers.*|pages/admin/users.*|pages/admin/appointments.*|utils/mock.js|utils/service.js|planning/golfact_page_flow.md|planning/golfact_db_schema.md
+FEATURE=voucher_valid_expired_used_tabs,card_valid_until,extend_edit_delete_pending
+FEATURE2=user_create_edit_delete_pending,appointment_user_date_filters
+RULE=soft_delete,expired_view_computed_from_cardValidUntil,pending_blocks_redeem
+VERIFY=node_c_changed_js,local_mock_crud_pending_expiry_ok
+-- END 6D6F58B0 10 --
+[Codex] 8
+GPT-5 Codex, 2026-07-31 11:01 CST, 620B06A9, 8
+TYPE=CHANGE STATUS=APPLIED
+SCOPE=admin_users_dense_list_layout
+CHANGED=pages/admin/users.js|pages/admin/users.wxml|pages/admin/users.wxss
+FEATURE=search_members,scrollable_member_list,detail_visible_below_list
+RULE=list_max_height_prevents_many_users_hiding_detail
+VERIFY=node_c_pages_admin_users_js,user_search_filter_ok
+-- END 620B06A9 8 --
+[Codex] 8
+GPT-5 Codex, 2026-07-31 11:04 CST, CA50D85D, 8
+TYPE=CHANGE STATUS=APPLIED
+SCOPE=pending_appointment_hours_display
+CHANGED=utils/service.js|pages/index/index.*|pages/mine/index.*
+FEATURE=home_and_mine_show_remaining_hours_and_pending_booked_hours
+RULE=pending_hours_sum_booked_appointments_only
+VERIFY=node_c_changed_js,pending_calc_ok,wxml_no_high_risk_expr
+-- END CA50D85D 8 --
+[Codex] 8
+GPT-5 Codex, 2026-07-31 11:08 CST, 777F2B07, 8
+TYPE=FIX STATUS=APPLIED
+SCOPE=home_remaining_hours_visibility
+CHANGED=pages/index/index.*|pages/mine/index.*
+FIX=use_remainingHoursText_pendingHoursText_in_wxml,split_hero_balance_into_two_chips
+RULE=avoid_direct_user_remainingHours_binding_in_home_mine_wxml
+VERIFY=node_c_index_mine_js,wxml_no_high_risk_expr
+-- END 777F2B07 8 --
+[Codex] 8
+GPT-5 Codex, 2026-07-31 11:14 CST, E3822090, 8
+TYPE=FIX STATUS=APPLIED
+SCOPE=home_button_navigation
+CHANGED=pages/index/index.js
+FIX=quick_link_booking_uses_switchTab_for_tabbar_pages
+ROUTES=booking_mine_tab_switch,shop_coach_activity_navigate
+VERIFY=node_c_index_js,home_navigation_routing_ok
+-- END E3822090 8 --
+[Codex] 9
+GPT-5 Codex, 2026-07-31 11:21 CST, 1441405C, 9
+TYPE=CHANGE STATUS=APPLIED
+SCOPE=tab_booking_center_scorecard_par_activity_entry
+CHANGED=app.json|pages/scorecard/edit.*|pages/admin/records.*
+FEATURE=booking_tab_center_position,course_par_autofill,total_par_score_to_par
+FEATURE2=admin_activity_participant_can_open_same_scorecard_entry_page
+NOTE=center_big_ball_requires_custom_tabbar_later_ui_phase
+VERIFY=node_c_scorecard_records,json_ok,course_par_calc_ok
+-- END 1441405C 9 --
+[Codex] 9
+GPT-5 Codex, 2026-07-31 11:28 CST, B2C4EA8D, 9
+TYPE=CHANGE STATUS=APPLIED
+SCOPE=scorecard_double_par_ranking_honors
+CHANGED=pages/scorecard/edit.*|pages/ranking/index.*|utils/mock.js|utils/service.js
+RULE=hole_strokes_capped_at_double_par,par3_6_par4_8_par5_10
+FEATURE=certified_honors_hole_in_one_birdie_par_eagle_as_一只鸡王
+VERIFY=node_c_changed_js,wxml_expr_scan_clean,mock_certified_honors_ok
+-- END B2C4EA8D 9 --
+[Codex] 9
+GPT-5 Codex, 2026-07-31 11:32 CST, 0A39F15A, 9
+TYPE=CHANGE STATUS=APPLIED
+SCOPE=home_certification_ranking_certification_layout
+CHANGED=pages/index/index.*|pages/ranking/index.*|utils/mock.js
+FEATURE=home_秋の认证_counts_and_recent10_score_line_chart
+FIX=ranking_title_秋の认证,two_row_honor_layout,add_鹰王
+RULE=eagle_exact_par_minus_2,one_chicken_par_minus_3_or_better,hio_counted_separately
+VERIFY=node_c_index_ranking_mock,eagle_one_chicken_honors_ok
+-- END 0A39F15A 9 --
+[Codex] 9
+GPT-5 Codex, 2026-07-31 11:37 CST, D3F7A975, 9
+TYPE=CHANGE STATUS=APPLIED
+SCOPE=ranking_honor_top_row_plan_sync
+CHANGED=pages/ranking/index.js|utils/mock.js|pages/index/index.js|pages/index/index.wxml|planning/golfact_page_flow.md|planning/golfact_dev_plan.md
+FIX=ranking_honors_top_row_locked_to_鹰王_鸟王
+FEATURE=home_certification_empty_state_safe_boolean,plan_docs_include_home_certification_and_ranking_honors
+VERIFY=node_c_index_ranking_mock_ok,wxml_high_risk_expr_scan_clean
+-- END D3F7A975 9 --
+[Codex] 8
+GPT-5 Codex, 2026-07-31 11:41 CST, 1E9222EC, 8
+TYPE=CHANGE STATUS=APPLIED
+SCOPE=home_visual_ranking_honors_admin_scorecard_course_prefill
+CHANGED=pages/index/index.wxml|pages/index/index.wxss|pages/ranking/index.*|pages/scorecard/edit.js|utils/mock.js
+FIX=home_hero_stable_bg,ranking_鹰王_鸟王_fixed_top_labels
+FEATURE=admin_activity_scorecard_prefills_course_from_activity_location_and_pars
+RULE=秋の认证_labels_not_editable,certification_calculated_from_holes
+VERIFY=node_c_index_ranking_scorecard_mock_ok,wxml_high_risk_expr_scan_clean
+-- END 1E9222EC 8 --
+[Codex] 8
+GPT-5 Codex, 2026-07-31 11:47 CST, 3B2A1E26, 8
+TYPE=CHANGE STATUS=APPLIED
+SCOPE=scorecard_history_tabs_certified_readonly_detail
+CHANGED=pages/scorecard/index.*|pages/scorecard/edit.*|planning/golfact_page_flow.md
+FEATURE=scorecard_history_tabs_self_editable_certified_readonly
+FEATURE2=certified_detail_shows_course_summary_holes_and_calculated_result_tags
+RULE=秋の认证_not_editable,certification_calculated_from_hole_strokes
+VERIFY=node_c_scorecard_index_edit_ok,wxml_high_risk_expr_scan_clean
+-- END 3B2A1E26 8 --
+[Codex] 7
+GPT-5 Codex, 2026-07-31 11:51 CST, C848239A, 7
+TYPE=CHANGE STATUS=APPLIED
+SCOPE=mock_certified_scorecard_for_zhangsan
+CHANGED=utils/mock.js
+FEATURE=seed_user_001_activity_admin_submitted_scorecard
+RULE=appears_under_scorecard_秋の认证_tab
+VERIFY=node_c_mock_and_scorecard_index_ok
+-- END C848239A 7 --
+[Codex] 9
+GPT-5 Codex, 2026-07-31 12:00 CST, F2BEF512, 9
+TYPE=CHANGE STATUS=APPLIED
+SCOPE=activity_management_registration_flow
+CHANGED=pages/activity/index.*|pages/admin/activities.*|pages/admin/dashboard.wxml|pages/admin/records.js|app.json|utils/mock.js|utils/service.js|planning/golfact_page_flow.md
+FEATURE=admin_create_edit_cancel_activity,member_register_pending_admin_review
+FEATURE2=confirm_activity,registration_completed_no_show,records_prefill_activity
+RULE=wechat_article_publish_deferred_until_cloud_and_official_account_binding
+VERIFY=node_c_mock_service_activity_admin_records_ok,app_json_ok,wxml_high_risk_scan_no_wxml_hits
+-- END F2BEF512 9 --
+[Codex] 7
+GPT-5 Codex, 2026-07-31 13:48 CST, 0538A8BA, 7
+TYPE=CHANGE STATUS=APPLIED
+SCOPE=admin_activity_layout_tabs
+CHANGED=pages/admin/activities.*|planning/golfact_page_flow.md
+FIX=activity_publish_form_layout
+FEATURE=admin_activity_tabs_recruiting_finished
+VERIFY=node_c_admin_activities_ok,wxml_high_risk_scan_clean
+-- END 0538A8BA 7 --
+[Codex] 8
+GPT-5 Codex, 2026-07-31 14:01 CST, 56691B5E, 8
+TYPE=CHANGE STATUS=APPLIED
+SCOPE=scorecard_self_delete_course_plan
+CHANGED=pages/scorecard/index.*|utils/mock.js|utils/service.js|planning/golfact_db_schema.md|planning/golfact_page_flow.md
+FEATURE=self_scorecards_can_soft_delete
+RULE=certified_scorecards_cannot_be_member_deleted
+PLAN=post_cloud_courses_cover_beijing_tianjin_hebei_and_abc_course_combinations
+VERIFY=node_c_scorecard_mock_service_ok,wxml_high_risk_scan_clean
+-- END 56691B5E 8 --
+[Codex] 7
+GPT-5 Codex, 2026-07-31 14:06 CST, F806C582, 7
+TYPE=CHANGE STATUS=APPLIED
+SCOPE=admin_activity_datetime_pickers
+CHANGED=pages/admin/activities.js|pages/admin/activities.wxml|pages/admin/activities.wxss
+FEATURE=activity_start_end_signup_times_use_date_and_time_pickers
+RULE=save_combines_picker_values_as_YYYY-MM-DD_HH:mm
+VERIFY=node_c_admin_activities_ok,wxml_high_risk_scan_clean
+-- END F806C582 7 --
+[Codex] 10
+GPT-5 Codex, 2026-07-31 14:37 CST, 8D22D5CD, 10
+TYPE=CHANGE STATUS=APPLIED
+SCOPE=cloud_phase1_login_phone_activity_seed
+CHANGED=app.js|utils/service.js|pages/mine/index.*|cloudfunctions/login/*|cloudfunctions/bindPhone/*|cloudfunctions/activityAction/*|cloudfunctions/initData/index.js|docs/setup.md
+FEATURE=USE_CLOUD_true_with_fallback,cloud_login_openid_current_user_autocreate
+FEATURE2=bind_phone_cloud_function,activity_register_review_cloud_function
+SEED=collections_include_recharge_vouchers,courses,activity,certified_scorecard,05_24_slots
+NEXT=cloud_functions_deploy_initData_run_then_test_login_activity_phone
+VERIFY=node_c_app_service_cloudfunctions_mine_ok,wxml_mine_scan_clean
+-- END 8D22D5CD 10 --
+[Codex] 7
+GPT-5 Codex, 2026-07-31 14:43 CST, 35597F48, 7
+TYPE=CHANGE STATUS=APPLIED
+SCOPE=mine_phone_binding_fallback
+CHANGED=pages/mine/index.*
+FIX=phone_auth_button_visible_click_area
+FEATURE=manual_phone_input_fallback_for_demo_and_uncertified_phone_api
+VERIFY=node_c_mine_index_ok,wxml_high_risk_scan_clean
+-- END 35597F48 7 --
+[Codex] 8
+GPT-5 Codex, 2026-07-31 14:46 CST, 0459CE97, 8
+TYPE=CHANGE STATUS=APPLIED
+SCOPE=mine_wechat_profile_completion
+CHANGED=pages/mine/index.*
+FEATURE=chooseAvatar_nickname_input_save_to_cloud_user
+FEATURE2=profile_completion_modal_after_openid_login
+RULE=openid_login_is_silent_profile_requires_user_action_under_wechat_privacy
+VERIFY=node_c_mine_index_ok,wxml_high_risk_scan_clean
+-- END 0459CE97 8 --
+[Codex] 7
+GPT-5 Codex, 2026-07-31 14:50 CST, 066069FF, 7
+TYPE=CHANGE STATUS=APPLIED
+SCOPE=mine_profile_header_layout
+CHANGED=pages/mine/index.wxml|pages/mine/index.wxss
+FIX=avatar_fixed_round_76rpx,profile_right_column_not_squeezed
+FIX2=compact_nickname_save_phone_actions
+VERIFY=node_c_mine_index_ok,wxml_high_risk_scan_clean
+-- END 066069FF 7 --
+[Codex] 7
+GPT-5 Codex, 2026-07-31 14:54 CST, 6DF9EDA8, 7
+TYPE=CHANGE STATUS=APPLIED
+SCOPE=mine_profile_autosave
+CHANGED=pages/mine/index.*
+FEATURE=avatar_choice_and_nickname_input_auto_save_without_extra_save_button
+RULE=wechat_still_requires_separate_avatar_choose_and_nickname_input_user_actions
+VERIFY=node_c_mine_index_ok,index_wxml_clean
+-- END 6DF9EDA8 7 --
+[Codex] 9
+GPT-5 Codex, 2026-07-31 13:58 CST, 9F183DB0, 9
+TYPE=CHANGE STATUS=APPLIED
+SCOPE=course_base_database_admin_course_picker
+CHANGED=utils/mock.js|utils/service.js|pages/admin/courses.*|pages/admin/activities.*|pages/scorecard/edit.js|pages/admin/dashboard.wxml|app.json|planning/golfact_db_schema.md|planning/golfact_page_flow.md
+FEATURE=course_base_library_schema_seed_admin_crud
+FEATURE2=activity_course_picker,scorecard_uses_course_library_pars
+RULE=hole_maps_stored_as_url_placeholders_for_future_cloud_storage
+VERIFY=node_c_mock_service_admin_courses_admin_activities_scorecard_ok,app_json_ok,wxml_high_risk_scan_clean
+-- END 9F183DB0 9 --
+[Codex] 8
+GPT-5 Codex, 2026-07-31 15:02 CST, A47C91E2, 8
+TYPE=CHANGE STATUS=APPLIED
+SCOPE=cloud_voucher_actions_and_rankings
+CHANGED=cloudfunctions/voucherAction/*|utils/service.js|docs/setup.md
+FEATURE=voucher_generate_update_delete_extend_activate_redeem_cloud_function
+FEATURE2=cloud_rankings_and_certified_honors_from_scorecards
+RULE=one_long_code_scan_redeem_once,trial_once_lifetime,card_expiry_checked_before_redeem
+VERIFY=node_c_service_ok,node_c_voucherAction_ok
+-- END A47C91E2 8 --
+[Codex] 8
+GPT-5 Codex, 2026-07-31 15:14 CST, B6F4A0C9, 8
+TYPE=CHANGE STATUS=APPLIED
+SCOPE=cloud_user_appointment_activity_settlement
+CHANGED=cloudfunctions/userAction/*|cloudfunctions/appointmentAction/*|cloudfunctions/activityAction/index.js|utils/service.js|utils/db.js|docs/setup.md
+FEATURE=admin_adjust_user_hours_cloud,appointment_create_status_settlement_cloud
+FEATURE2=activity_registration_settle_and_admin_score_record_cloud
+RULE=cancel_refunds_hours_and_releases_slots,no_show_uses_settings_multiplier,48h_auto_no_dispute_on_list_load
+VERIFY=node_c_service_db_userAction_appointmentAction_activityAction_ok
+-- END B6F4A0C9 8 --
+[Codex] 7
+GPT-5 Codex, 2026-07-31 15:32 CST, C98A71D4, 7
+TYPE=CHANGE STATUS=APPLIED
+SCOPE=recharge_ledger_cloud_precision
+CHANGED=cloudfunctions/userAction/index.js|cloudfunctions/appointmentAction/index.js|cloudfunctions/voucherAction/index.js|utils/service.js|pages/admin/recharges.js|docs/setup.md
+FEATURE=admin_direct_recharge_updates_user_balance_and_recharge_records
+FEATURE2=appointments_deduct_recharge_records_by_earliest_expiry,refund_by_deduction_details,no_show_extra_deducts_earliest
+FIX=voucher_redeem_recharge_status_valid
+VERIFY=node_c_userAction_appointmentAction_voucherAction_service_admin_recharges_ok
+-- END C98A71D4 7 --
+[Codex] 8
+GPT-5 Codex, 2026-07-31 15:46 CST, E3D9B816, 8
+TYPE=CHANGE STATUS=APPLIED
+SCOPE=admin_bays_products_coaches_management
+CHANGED=pages/admin/bays.*|pages/admin/products.*|pages/admin/coaches.*|utils/service.js|utils/mock.js|pages/admin/dashboard.wxml|app.json|pages/booking/index.js|pages/shop/index.js|pages/shop/detail.js
+FEATURE=bay_crud_slot_open_close_type_switch_generate_day_slots
+FEATURE2=product_category_product_crud_on_off_sale,coach_crud_and_bill_summary
+RULE=user_booking_only_active_bays_open_slots,shop_only_on_sale_products,linked_coaches_only_active
+VERIFY=node_c_new_admin_pages_service_mock_booking_shop_ok,app_json_ok,wxml_high_risk_scan_clean
+-- END E3D9B816 8 --

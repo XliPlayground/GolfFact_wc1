@@ -1,0 +1,107 @@
+<view class="container">
+  <view class="card">
+    <view class="section-title">{{userFormTitle}}</view>
+    <view class="profile-form">
+      <input class="field-input" placeholder="会员姓名" value="{{userName}}" bindinput="onUserNameInput" />
+      <input class="field-input" placeholder="手机号" value="{{userPhone}}" bindinput="onUserPhoneInput" />
+      <input class="field-input" placeholder="会员等级 normal / silver / gold" value="{{userMemberLevel}}" bindinput="onUserMemberLevelInput" />
+      <input wx:if="{{showInitialHours}}" class="field-input" type="digit" placeholder="初始小时数，可不填" value="{{userInitialHours}}" bindinput="onUserInitialHoursInput" />
+      <picker bindchange="onUserStatusChange" value="{{userStatusIndex}}" range="{{userStatusOptions}}" range-key="label">
+        <view class="field-picker">状态：{{userStatusLabel}}</view>
+      </picker>
+    </view>
+    <view class="form-actions">
+      <view class="btn-secondary form-btn" bindtap="resetUserForm">清空</view>
+      <view class="btn-primary form-btn" bindtap="saveUserProfile">保存会员</view>
+    </view>
+  </view>
+
+  <view class="workbench">
+    <view class="card list-card">
+      <view class="section-title">会员列表</view>
+      <view class="search-row">
+        <input class="field-input" placeholder="搜索姓名、手机号、等级、状态" value="{{userKeyword}}" bindinput="onUserKeywordInput" />
+        <view class="clear-btn" bindtap="clearUserKeyword">清空</view>
+      </view>
+      <scroll-view class="user-scroll" scroll-y>
+        <view wx:if="{{users.length === 0}}" class="empty-state compact">暂无匹配会员</view>
+        <view wx:for="{{users}}" wx:key="_id" class="{{item.className}}" bindtap="selectUser" data-id="{{item._id}}">
+          <view class="user-main">
+            <view class="user-name">{{item.displayName}}</view>
+            <view class="user-meta">{{item.phoneText}} · 剩余 {{item.remainingHours}} 小时 · {{item.statusText}}</view>
+            <view class="user-actions">
+              <view class="mini-btn" catchtap="editUser" data-id="{{item._id}}">编辑</view>
+              <view wx:if="{{item.isActive}}" class="warn-mini-btn" catchtap="setUserPending" data-id="{{item._id}}">待处理</view>
+              <view wx:if="{{item.isPending}}" class="mini-btn" catchtap="restoreUserActive" data-id="{{item._id}}">恢复</view>
+              <view class="danger-mini-btn" catchtap="deleteUser" data-id="{{item._id}}">删除</view>
+            </view>
+          </view>
+          <view class="coach-count">{{item.coachCount}} 位教练</view>
+        </view>
+      </scroll-view>
+    </view>
+
+    <view class="detail-column">
+      <view class="card" wx:if="{{selectedUser}}">
+        <view class="section-title">会员详情</view>
+        <view class="member-summary">
+          <view>
+            <view class="summary-label">剩余时长</view>
+            <view class="summary-value">{{selectedUser.remainingHours}}h</view>
+          </view>
+          <view>
+            <view class="summary-label">累计充值</view>
+            <view class="summary-value">{{selectedUser.totalRechargedHours}}h</view>
+          </view>
+          <view>
+            <view class="summary-label">爽约次数</view>
+            <view class="summary-value">{{selectedUser.currentNoShowCount}}</view>
+          </view>
+        </view>
+        <view class="adjust-box">
+          <input class="field-input" type="text" placeholder="调整时长，扣减用负数" value="{{adjustHours}}" bindinput="onAdjustHoursInput" />
+          <input class="field-input" placeholder="调整原因" value="{{adjustReason}}" bindinput="onAdjustReasonInput" />
+          <view class="btn-secondary adjust-btn" bindtap="submitAdjustHours">确认调整</view>
+        </view>
+      </view>
+
+      <view class="card" wx:if="{{selectedUser}}">
+        <view class="section-title">关联教练</view>
+        <checkbox-group bindchange="onCoachChange">
+          <label class="coach-row" wx:for="{{coaches}}" wx:key="_id">
+            <checkbox value="{{item._id}}" checked="{{item.checked}}" />
+            <view>
+              <view class="coach-name">{{item.name}}</view>
+              <view class="coach-tags">{{item.tagsText}}</view>
+            </view>
+          </label>
+        </checkbox-group>
+        <view class="btn-primary mt-24" bindtap="saveUserCoaches">保存关联</view>
+      </view>
+
+      <view class="card" wx:if="{{selectedUser}}">
+        <view class="section-title">最近预约</view>
+        <view wx:if="{{selectedAppointments.length === 0}}" class="empty-state compact">暂无预约</view>
+        <view wx:for="{{selectedAppointments}}" wx:key="_id" class="record-row">
+          <view>
+            <view class="record-title">{{item.timeText}}</view>
+            <view class="record-meta">{{item.bayName}} · {{item.typeText}} · 扣 {{item.deductedHoursText}}</view>
+          </view>
+          <view class="record-status status-{{item.status}}">{{item.statusText}}</view>
+        </view>
+      </view>
+
+      <view class="card" wx:if="{{selectedUser}}">
+        <view class="section-title">最近时长记录</view>
+        <view wx:if="{{selectedRecharges.length === 0}}" class="empty-state compact">暂无记录</view>
+        <view wx:for="{{selectedRecharges}}" wx:key="_id" class="record-row">
+          <view>
+            <view class="record-title">{{item.hoursText}} 小时</view>
+            <view class="record-meta">{{item.createdAt}} · {{item.remarkText}}</view>
+          </view>
+          <view class="record-status">{{item.statusText}}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

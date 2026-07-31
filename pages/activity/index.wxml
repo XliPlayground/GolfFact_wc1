@@ -1,0 +1,33 @@
+<view class="container">
+  <view class="card activity-detail" wx:if="{{isDetail}}">
+    <view class="activity-title">{{activity.title}}</view>
+    <view class="activity-status">{{activity.statusText}} · {{activity.myRegistrationText}}</view>
+    <view class="activity-meta">
+      <view>时间：{{activity.startTime}}</view>
+      <view>报名截止：{{activity.signupEndText}}</view>
+      <view>地点：{{activity.location}}</view>
+      <view>费用：¥{{activity.feeText}}</view>
+      <view>人数：{{activity.approvedCount}} / {{activity.maxParticipantsText}}</view>
+      <view>待确认：{{activity.pendingCount}}</view>
+    </view>
+    <view class="activity-subtitle">行程</view>
+    <view class="activity-desc">{{activity.itinerary}}</view>
+    <view class="activity-subtitle">餐食</view>
+    <view class="activity-desc">{{activity.meal}}</view>
+    <view class="activity-subtitle">说明</view>
+    <view class="activity-desc">{{activity.description}}</view>
+    <view wx:if="{{activity.canJoin}}" class="btn-primary mt-24" bindtap="joinActivity">{{activity.joinButtonText}}</view>
+    <view wx:if="{{activity.showJoinDisabled}}" class="btn-disabled mt-24">{{activity.joinButtonText}}</view>
+  </view>
+  <view wx:else class="card">
+    <view class="section-title">近期活动</view>
+    <view wx:for="{{activities}}" wx:key="_id" class="activity-item" bindtap="goDetail" data-id="{{item._id}}">
+      <view class="activity-title">{{item.title}}</view>
+      <view class="activity-meta">{{item.startTime}} · {{item.location}}</view>
+      <view class="activity-row">
+        <text>{{item.statusText}}</text>
+        <text>{{item.approvedCount}} / {{item.maxParticipantsText}} 人</text>
+      </view>
+    </view>
+  </view>
+</view>

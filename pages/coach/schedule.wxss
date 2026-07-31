@@ -1,0 +1,42 @@
+.summary-card {
+  background: linear-gradient(135deg, #22C55E 0%, #16A34A 100%);
+  color: white;
+  text-align: center;
+}
+
+.summary-title {
+  font-size: 26rpx;
+  opacity: 0.9;
+}
+
+.summary-hours {
+  font-size: 56rpx;
+  font-weight: 700;
+  margin: 16rpx 0;
+}
+
+.appointment-item {
+  padding: 24rpx 0;
+  border-bottom: 1rpx solid #F3F4F6;
+}
+
+.appointment-item:last-child {
+  border-bottom: none;
+}
+
+.appointment-date {
+  font-size: 30rpx;
+  font-weight: 600;
+  margin-bottom: 8rpx;
+}
+
+.appointment-info {
+  font-size: 26rpx;
+  color: #6B7280;
+  margin-bottom: 8rpx;
+}
+
+.appointment-coachhours {
+  font-size: 24rpx;
+  color: #22C55E;
+}

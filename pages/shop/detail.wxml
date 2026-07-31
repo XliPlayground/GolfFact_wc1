@@ -1,0 +1,9 @@
+<view class="container">
+  <view class="card">
+    <view class="product-image">🛍️</view>
+    <view class="product-name">{{product.name}}</view>
+    <view class="product-price">¥{{product.price}}</view>
+    <view class="product-desc">{{product.description || '暂无描述'}}</view>
+    <view class="offline-notice">请到店线下支付购买</view>
+  </view>
+</view>

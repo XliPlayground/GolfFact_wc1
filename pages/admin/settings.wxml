@@ -1,0 +1,22 @@
+<view class="container">
+  <view class="card">
+    <view class="section-title">预约结算规则</view>
+    <view class="field-row">
+      <view>
+        <view class="field-label">确认窗口</view>
+        <view class="field-help">预约结束后，老板可在此时间内标记完成或爽约。</view>
+      </view>
+      <input class="field-input" type="number" value="{{settlementConfirmHours}}" bindinput="onConfirmHoursInput" />
+      <view class="field-unit">小时</view>
+    </view>
+    <view class="field-row">
+      <view>
+        <view class="field-label">爽约倍率</view>
+        <view class="field-help">例如 1.5 表示爽约按 1.5 倍时长结算。</view>
+      </view>
+      <input class="field-input" type="digit" value="{{noShowMultiplier}}" bindinput="onMultiplierInput" />
+      <view class="field-unit">倍</view>
+    </view>
+    <view class="btn-primary mt-24" bindtap="saveSettings">保存设置</view>
+  </view>
+</view>

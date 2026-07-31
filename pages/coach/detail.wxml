@@ -1,0 +1,12 @@
+<view class="container">
+  <view class="card" wx:if="{{coach._id}}">
+    <view class="coach-avatar">👤</view>
+    <view class="coach-name">{{coach.name}}</view>
+    <view class="coach-tags">
+      <text class="tag tag-primary" wx:for="{{coach.tags}}" wx:key="*this">{{item}}</text>
+    </view>
+    <view class="coach-intro">{{coach.intro}}</view>
+    <view class="btn-primary mt-24" bindtap="bookCoach">预约教练</view>
+  </view>
+  <view wx:else class="empty-state">暂无查看权限</view>
+</view>

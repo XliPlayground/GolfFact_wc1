@@ -1,0 +1,111 @@
+.tabs {
+  display: flex;
+  gap: 12rpx;
+}
+
+.tab {
+  flex: 1;
+  padding: 16rpx 8rpx;
+  border-radius: 10rpx;
+  background: #F3F4F6;
+  color: var(--text-secondary);
+  text-align: center;
+  font-size: 24rpx;
+}
+
+.tab.active {
+  background: var(--secondary);
+  color: var(--primary-dark);
+  font-weight: 600;
+}
+
+.filter-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 96rpx;
+  gap: 12rpx;
+  margin-top: 18rpx;
+  align-items: center;
+}
+
+.field-picker {
+  min-height: 68rpx;
+  line-height: 68rpx;
+  padding: 0 14rpx;
+  border-radius: 10rpx;
+  background: #F9FAFB;
+  color: var(--text);
+  font-size: 24rpx;
+  box-sizing: border-box;
+}
+
+.clear-btn {
+  min-height: 68rpx;
+  line-height: 68rpx;
+  border-radius: 10rpx;
+  background: #F3F4F6;
+  color: #6B7280;
+  font-size: 24rpx;
+  text-align: center;
+}
+
+.appointment-title {
+  font-size: 30rpx;
+  font-weight: 600;
+}
+
+.appointment-time,
+.appointment-meta {
+  margin-top: 8rpx;
+  color: var(--text-secondary);
+  font-size: 24rpx;
+}
+
+.status {
+  padding: 6rpx 14rpx;
+  border-radius: 8rpx;
+  background: #F3F4F6;
+  color: var(--text-secondary);
+  font-size: 22rpx;
+}
+
+.status-booked {
+  background: var(--secondary);
+  color: var(--primary-dark);
+}
+
+.status-completed {
+  background: #E0F2FE;
+  color: #0369A1;
+}
+
+.status-cancelled,
+.status-no_show {
+  background: #FEE2E2;
+  color: #B91C1C;
+}
+
+.action-row {
+  display: flex;
+  gap: 12rpx;
+  margin-top: 20rpx;
+}
+
+.small-btn {
+  flex: 1;
+  padding: 14rpx 8rpx;
+  border-radius: 10rpx;
+  background: #F3F4F6;
+  color: var(--text);
+  text-align: center;
+  font-size: 24rpx;
+}
+
+.small-btn.primary {
+  background: var(--secondary);
+  color: var(--primary-dark);
+}
+
+.small-btn.danger {
+  background: #FEE2E2;
+  color: #B91C1C;
+}

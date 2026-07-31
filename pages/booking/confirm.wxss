@@ -1,0 +1,26 @@
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #F3F4F6;
+}
+
+.info-row:last-child {
+  border-bottom: none;
+}
+
+.info-label {
+  color: #6B7280;
+  font-size: 28rpx;
+}
+
+.info-value {
+  color: #111827;
+  font-size: 28rpx;
+  font-weight: 500;
+}
+
+.info-value.price {
+  color: #22C55E;
+  font-size: 36rpx;
+}

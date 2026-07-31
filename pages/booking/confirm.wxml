@@ -1,0 +1,57 @@
+<view class="container">
+  <view class="card">
+    <view class="section-title">预约信息确认</view>
+    
+    <view class="info-row">
+      <view class="info-label">日期</view>
+      <view class="info-value">{{booking.date}}</view>
+    </view>
+    <view class="info-row">
+      <view class="info-label">打位</view>
+      <view class="info-value">{{bayName}}</view>
+    </view>
+    <view class="info-row">
+      <view class="info-label">时段</view>
+      <view class="info-value">{{timeRange}}</view>
+    </view>
+    <view class="info-row">
+      <view class="info-label">类型</view>
+      <view class="info-value">{{booking.type === 'teaching' ? '培训教学' : '自助练球'}}</view>
+    </view>
+    <view class="info-row" wx:if="{{booking.type === 'teaching'}}">
+      <view class="info-label">教练</view>
+      <view class="info-value">{{coachName}}</view>
+    </view>
+    <view class="info-row">
+      <view class="info-label">到访人数</view>
+      <view class="info-value">{{booking.visitorCount}} 人</view>
+    </view>
+    <view class="info-row">
+      <view class="info-label">烟灰缸</view>
+      <view class="info-value">{{booking.ashtray ? '准备' : '不需要'}}</view>
+    </view>
+    <view class="info-row" wx:if="{{booking.requirements.length > 0}}">
+      <view class="info-label">服务需求</view>
+      <view class="info-value">{{requirementsText}}</view>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="section-title">时长确认</view>
+    <view class="info-row">
+      <view class="info-label">时长</view>
+      <view class="info-value">{{booking.deductedHours}} 小时</view>
+    </view>
+    <view class="info-row">
+      <view class="info-label">扣减时长</view>
+      <view class="info-value text-primary">{{booking.deductedHours}} 小时</view>
+    </view>
+    <view class="info-row">
+      <view class="info-label">剩余时长</view>
+      <view class="info-value">{{user.remainingHours}} 小时</view>
+    </view>
+  </view>
+
+  <view class="btn-primary mt-24" bindtap="submitBooking">确认预约</view>
+  <view class="btn-secondary mt-16" bindtap="goBack">返回修改</view>
+</view>

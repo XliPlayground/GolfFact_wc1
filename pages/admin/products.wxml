@@ -1,0 +1,88 @@
+<view class="container">
+  <view class="card page-head">
+    <view>
+      <view class="section-title">商品管理</view>
+      <view class="head-subtitle">仅展示商品，到店线下购买</view>
+    </view>
+    <view class="head-actions">
+      <view class="head-action secondary" bindtap="newCategory">分类</view>
+      <view class="head-action" bindtap="newProduct">新商品</view>
+    </view>
+  </view>
+
+  <view wx:if="{{editingCategory}}" class="card">
+    <view class="section-title">分类信息</view>
+    <view class="form-grid">
+      <view class="field-block">
+        <view class="field-label">分类名称</view>
+        <input class="field-input" value="{{categoryForm.name}}" data-field="name" bindinput="onCategoryInput" />
+      </view>
+      <view class="field-block">
+        <view class="field-label">排序</view>
+        <input class="field-input" type="number" value="{{categoryForm.displayOrder}}" data-field="displayOrder" bindinput="onCategoryInput" />
+      </view>
+    </view>
+    <view class="btn-primary mt-24" bindtap="saveCategory">保存分类</view>
+  </view>
+
+  <view wx:if="{{editingProduct}}" class="card">
+    <view class="section-title">商品信息</view>
+    <view class="field-block">
+      <view class="field-label">商品名称</view>
+      <input class="field-input" value="{{productForm.name}}" data-field="name" bindinput="onProductInput" />
+    </view>
+    <picker bindchange="onProductCategoryChange" value="{{categoryIndex}}" range="{{categories}}" range-key="name">
+      <view class="field-picker">分类：{{categoryPickerText}}</view>
+    </picker>
+    <view class="form-grid">
+      <view class="field-block">
+        <view class="field-label">价格</view>
+        <input class="field-input" type="digit" value="{{productForm.price}}" data-field="price" bindinput="onProductInput" />
+      </view>
+      <view class="field-block">
+        <view class="field-label">单位</view>
+        <input class="field-input" value="{{productForm.unit}}" data-field="unit" bindinput="onProductInput" />
+      </view>
+      <view class="field-block">
+        <view class="field-label">库存/备注数</view>
+        <input class="field-input" type="number" value="{{productForm.stock}}" data-field="stock" bindinput="onProductInput" />
+      </view>
+      <view class="field-block">
+        <view class="field-label">图片地址</view>
+        <input class="field-input" value="{{productForm.imageUrl}}" data-field="imageUrl" bindinput="onProductInput" />
+      </view>
+    </view>
+    <view class="field-block">
+      <view class="field-label">描述</view>
+      <textarea class="field-textarea" value="{{productForm.description}}" data-field="description" bindinput="onProductInput"></textarea>
+    </view>
+    <view class="action-row">
+      <view class="small-btn" bindtap="toggleProductStatus">状态：{{productForm.status === 'on_sale' ? '展示中' : '已下架'}}</view>
+      <view class="small-btn primary" bindtap="saveProduct">保存</view>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="section-title">分类</view>
+    <view class="category-row" wx:for="{{categories}}" wx:key="_id">
+      <view>{{item.name}}</view>
+      <view class="small-btn" bindtap="editCategory" data-id="{{item._id}}">编辑</view>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="section-title">商品列表</view>
+    <view wx:if="{{showProductEmpty}}" class="empty-state compact">暂无商品</view>
+    <view wx:for="{{products}}" wx:key="_id" class="product-row">
+      <view>
+        <view class="row-title">{{item.name}}</view>
+        <view class="row-meta">{{item.categoryName}} · ¥{{item.price}}/{{item.unit}} · 库存 {{item.stock}} · {{item.statusText}}</view>
+      </view>
+      <view class="action-row inline">
+        <view class="small-btn" bindtap="editProduct" data-id="{{item._id}}">编辑</view>
+        <view class="small-btn" bindtap="quickToggleProduct" data-id="{{item._id}}">{{item.status === 'on_sale' ? '下架' : '上架'}}</view>
+        <view class="small-btn danger" bindtap="deleteProduct" data-id="{{item._id}}">删除</view>
+      </view>
+    </view>
+  </view>
+</view>

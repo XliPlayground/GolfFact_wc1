@@ -1,0 +1,69 @@
+.scan-panel {
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
+  min-height: 132rpx;
+  margin-bottom: 22rpx;
+  padding: 22rpx;
+  border-radius: 12rpx;
+  background: #ECFDF5;
+  border: 1rpx solid #BBF7D0;
+  box-sizing: border-box;
+}
+
+.scan-panel:active {
+  background: #DCFCE7;
+}
+
+.scan-icon {
+  width: 72rpx;
+  height: 72rpx;
+  line-height: 72rpx;
+  border-radius: 12rpx;
+  background: #16A34A;
+  color: #FFFFFF;
+  font-size: 42rpx;
+  font-weight: 700;
+  text-align: center;
+}
+
+.scan-title {
+  color: #064E3B;
+  font-size: 30rpx;
+  font-weight: 600;
+}
+
+.scan-subtitle {
+  margin-top: 4rpx;
+  color: #047857;
+  font-size: 24rpx;
+}
+
+.field-input {
+  min-height: 84rpx;
+  margin-bottom: 18rpx;
+  padding: 0 20rpx;
+  border-radius: 12rpx;
+  background: #F9FAFB;
+  box-sizing: border-box;
+}
+
+.action-row {
+  display: grid;
+  grid-template-columns: 180rpx 1fr;
+  gap: 16rpx;
+  margin-top: 24rpx;
+}
+
+.action-btn {
+  min-height: 84rpx;
+  padding: 18rpx 0;
+  box-sizing: border-box;
+}
+
+.hint {
+  margin-top: 18rpx;
+  color: #6B7280;
+  font-size: 24rpx;
+  line-height: 1.5;
+}

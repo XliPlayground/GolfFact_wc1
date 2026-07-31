@@ -1,0 +1,36 @@
+<view class="container">
+  <view class="card honor-card">
+    <view class="section-title">秋の认证</view>
+    <view class="honor-grid top">
+      <view wx:for="{{honorsTop}}" wx:key="title" class="honor-item">
+        <view class="honor-title">{{item.title}}</view>
+        <view class="honor-name">{{item.name}}</view>
+        <view class="honor-value">{{item.valueText}}</view>
+      </view>
+    </view>
+    <view class="honor-grid bottom">
+      <view wx:for="{{honorsBottom}}" wx:key="title" class="honor-item">
+        <view class="honor-title">{{item.title}}</view>
+        <view class="honor-name">{{item.name}}</view>
+        <view class="honor-value">{{item.valueText}}</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="tabs">
+    <view wx:for="{{tabs}}" wx:key="value" class="{{item.className}}" bindtap="switchTab" data-tab="{{item.value}}">{{item.label}}</view>
+  </view>
+
+  <view class="card ranking-list">
+    <view class="ranking-header">
+      <text>排名</text>
+      <text>会员</text>
+      <text>杆数</text>
+    </view>
+    <view wx:for="{{rankings}}" wx:key="userId" class="{{item.className}}">
+      <text class="rank">{{index + 1}}</text>
+      <text class="name">{{item.name}}</text>
+      <text class="points">{{item.value}}</text>
+    </view>
+  </view>
+</view>

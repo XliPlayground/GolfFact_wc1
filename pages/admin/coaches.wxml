@@ -1,0 +1,83 @@
+<view class="container">
+  <view class="card page-head">
+    <view>
+      <view class="section-title">教练管理</view>
+      <view class="head-subtitle">维护教练资料、课时单价和课时汇总</view>
+    </view>
+    <view class="head-action" bindtap="newCoach">新教练</view>
+  </view>
+
+  <view wx:if="{{editingCoach}}" class="card">
+    <view class="section-title">教练信息</view>
+    <view class="field-block">
+      <view class="field-label">姓名</view>
+      <input class="field-input" value="{{coachForm.name}}" data-field="name" bindinput="onCoachInput" />
+    </view>
+    <view class="form-grid">
+      <view class="field-block">
+        <view class="field-label">标签</view>
+        <input class="field-input" placeholder="短杆、推杆" value="{{coachForm.tagsText}}" data-field="tagsText" bindinput="onCoachInput" />
+      </view>
+      <view class="field-block">
+        <view class="field-label">课时单价</view>
+        <input class="field-input" type="digit" value="{{coachForm.hourlyRate}}" data-field="hourlyRate" bindinput="onCoachInput" />
+      </view>
+    </view>
+    <view class="field-block">
+      <view class="field-label">简介</view>
+      <textarea class="field-textarea" value="{{coachForm.intro}}" data-field="intro" bindinput="onCoachInput"></textarea>
+    </view>
+    <view class="action-row">
+      <view class="small-btn" bindtap="toggleCoachStatus">状态：{{coachForm.status === 'active' ? '启用' : '停用'}}</view>
+      <view class="small-btn primary" bindtap="saveCoach">保存</view>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="section-title">教练列表</view>
+    <view wx:for="{{coaches}}" wx:key="_id" class="coach-row">
+      <view>
+        <view class="row-title">{{item.name}}</view>
+        <view class="row-meta">{{item.tagsText}} · {{item.hourlyRate}}/小时 · {{item.linkedCount}} 位学员 · {{item.statusText}}</view>
+        <view class="row-desc">{{item.intro}}</view>
+      </view>
+      <view class="action-row inline">
+        <view class="small-btn" bindtap="editCoach" data-id="{{item._id}}">编辑</view>
+        <view class="small-btn danger" bindtap="deleteCoach" data-id="{{item._id}}">删除</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="section-title">课时账单</view>
+    <picker bindchange="onBillCoachChange" value="{{billCoachIndex}}" range="{{coaches}}" range-key="name">
+      <view class="field-picker">教练：{{billCoachName}}</view>
+    </picker>
+    <view class="form-grid">
+      <picker mode="date" value="{{billStartDate}}" bindchange="onBillStartChange">
+        <view class="field-picker">开始：{{billStartDate}}</view>
+      </picker>
+      <picker mode="date" value="{{billEndDate}}" bindchange="onBillEndChange">
+        <view class="field-picker">结束：{{billEndDate}}</view>
+      </picker>
+    </view>
+    <view class="bill-summary">
+      <view>
+        <view class="summary-value">{{billTotalHours}}h</view>
+        <view class="summary-label">课时</view>
+      </view>
+      <view>
+        <view class="summary-value">¥{{billTotalAmount}}</view>
+        <view class="summary-label">应付</view>
+      </view>
+    </view>
+    <view wx:if="{{showBillEmpty}}" class="empty-state compact">暂无课时</view>
+    <view wx:for="{{billRows}}" wx:key="_id" class="bill-row">
+      <view>
+        <view class="row-title">{{item.timeText}}</view>
+        <view class="row-meta">{{item.billHours}}h · ¥{{item.billRate}}/h · {{item.statusText}}</view>
+      </view>
+      <view class="bill-amount">¥{{item.billAmount}}</view>
+    </view>
+  </view>
+</view>

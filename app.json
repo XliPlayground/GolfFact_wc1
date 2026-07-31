@@ -1,0 +1,71 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/booking/index",
+    "pages/booking/confirm",
+    "pages/booking/detail",
+    "pages/scorecard/index",
+    "pages/scorecard/edit",
+    "pages/ranking/index",
+    "pages/mine/index",
+    "pages/mine/appointments",
+    "pages/mine/recharges",
+    "pages/mine/redeem",
+    "pages/shop/index",
+    "pages/shop/detail",
+    "pages/coach/index",
+    "pages/coach/detail",
+    "pages/activity/index",
+    "pages/admin/login",
+    "pages/admin/dashboard",
+    "pages/admin/users",
+    "pages/admin/recharges",
+    "pages/admin/vouchers",
+    "pages/admin/appointments",
+    "pages/admin/bays",
+    "pages/admin/products",
+    "pages/admin/coaches",
+    "pages/admin/activities",
+    "pages/admin/courses",
+    "pages/admin/settings",
+    "pages/admin/records",
+    "pages/coach/login",
+    "pages/coach/schedule"
+  ],
+  "tabBar": {
+    "color": "#9CA3AF",
+    "selectedColor": "#22C55E",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/scorecard/index",
+        "text": "下场记分"
+      },
+      {
+        "pagePath": "pages/booking/index",
+        "text": "打球预约"
+      },
+      {
+        "pagePath": "pages/ranking/index",
+        "text": "会员排名"
+      },
+      {
+        "pagePath": "pages/mine/index",
+        "text": "我的"
+      }
+    ]
+  },
+  "window": {
+    "backgroundTextStyle": "dark",
+    "navigationBarBackgroundColor": "#22C55E",
+    "navigationBarTitleText": "Golfact",
+    "navigationBarTextStyle": "white"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

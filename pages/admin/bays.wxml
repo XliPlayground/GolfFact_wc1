@@ -1,0 +1,67 @@
+<view class="container">
+  <view class="card page-head">
+    <view>
+      <view class="section-title">打位与时段</view>
+      <view class="head-subtitle">调整打位启用状态和每日开放时段</view>
+    </view>
+    <view class="head-action" bindtap="newBay">新建打位</view>
+  </view>
+
+  <view wx:if="{{editingBay}}" class="card form-card">
+    <view class="section-title">打位信息</view>
+    <view class="form-grid">
+      <view class="field-block">
+        <view class="field-label">编号</view>
+        <input class="field-input" placeholder="A1" value="{{bayForm.code}}" data-field="code" bindinput="onBayInput" />
+      </view>
+      <view class="field-block">
+        <view class="field-label">排序</view>
+        <input class="field-input" type="number" value="{{bayForm.displayOrder}}" data-field="displayOrder" bindinput="onBayInput" />
+      </view>
+    </view>
+    <view class="field-block">
+      <view class="field-label">名称</view>
+      <input class="field-input" placeholder="1号打位" value="{{bayForm.name}}" data-field="name" bindinput="onBayInput" />
+    </view>
+    <view class="action-row">
+      <view class="small-btn" bindtap="toggleBayStatus">状态：{{bayForm.status === 'active' ? '启用' : '停用'}}</view>
+      <view class="small-btn primary" bindtap="saveBay">保存</view>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="section-title">打位列表</view>
+    <view wx:for="{{bays}}" wx:key="_id" class="list-row">
+      <view>
+        <view class="row-title">{{item.code}} · {{item.name}}</view>
+        <view class="row-meta">排序 {{item.displayOrder}} · {{item.statusText}}</view>
+      </view>
+      <view class="action-row inline">
+        <view class="small-btn" bindtap="editBay" data-id="{{item._id}}">编辑</view>
+        <view class="small-btn danger" bindtap="deleteBay" data-id="{{item._id}}">删除</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="section-title">时段管理</view>
+    <picker mode="date" value="{{selectedDate}}" bindchange="onDateChange">
+      <view class="field-picker">日期：{{selectedDate}}</view>
+    </picker>
+    <picker bindchange="onBayChange" value="{{bayIndex}}" range="{{bays}}" range-key="name">
+      <view class="field-picker">打位：{{selectedBayName}}</view>
+    </picker>
+    <view class="small-btn primary generate-btn" bindtap="generateDaySlots">生成当天 05:00-24:00 时段</view>
+    <view wx:if="{{showSlotEmpty}}" class="empty-state compact">暂无时段</view>
+    <view class="slot-grid">
+      <view wx:for="{{slots}}" wx:key="_id" class="{{item.slotClass}}">
+        <view class="slot-time">{{item.startTime}}-{{item.endTime}}</view>
+        <view class="slot-meta">{{item.typeText}} · {{item.openText}} · {{item.bookedText}}</view>
+        <view class="slot-actions">
+          <view class="mini-btn" bindtap="toggleSlotOpen" data-id="{{item._id}}">{{item.isOpen ? '关闭' : '开放'}}</view>
+          <view class="mini-btn" bindtap="switchSlotType" data-id="{{item._id}}">转{{item.type === 'teaching' ? '自助' : '教学'}}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

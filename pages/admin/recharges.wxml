@@ -1,0 +1,39 @@
+<view class="container">
+  <view class="card">
+    <view class="section-title">给会员充时</view>
+    <picker bindchange="onUserChange" value="{{userIndex}}" range="{{users}}" range-key="displayName">
+      <view class="field-picker">{{selectedUserName}}</view>
+    </picker>
+    <input class="field-input" type="digit" placeholder="充入小时数" value="{{hours}}" bindinput="onHoursInput" />
+    <picker mode="date" value="{{expiryDate}}" bindchange="onExpiryChange">
+      <view class="field-picker">到期日：{{expiryDate}}</view>
+    </picker>
+    <input class="field-input" placeholder="备注（可选）" value="{{remark}}" bindinput="onRemarkInput" />
+    <view class="btn-primary mt-24" bindtap="submitRecharge">确认充时</view>
+  </view>
+
+  <view class="card">
+    <view class="section-title">会员概览</view>
+    <view wx:for="{{users}}" wx:key="_id" class="user-row">
+      <view>
+        <view class="user-name">{{item.displayName}}</view>
+        <view class="user-meta">{{item.phoneText}} · {{item.memberLevelText}}</view>
+      </view>
+      <view class="hours-value">{{item.remainingHours}}h</view>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="section-title">充值记录</view>
+    <view wx:if="{{recharges.length === 0}}" class="empty-state">暂无充值记录</view>
+    <view wx:for="{{recharges}}" wx:key="_id" class="recharge-row">
+      <view class="flex-between">
+        <view>
+          <view class="recharge-title">{{item.userName}} +{{item.hours}} 小时</view>
+          <view class="recharge-meta">到期 {{item.expiryDate}} · 剩余 {{item.remainingHours}} 小时</view>
+        </view>
+        <view class="status-pill">{{item.statusText}}</view>
+      </view>
+    </view>
+  </view>
+</view>

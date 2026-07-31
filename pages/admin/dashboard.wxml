@@ -1,0 +1,18 @@
+<view class="container">
+  <view class="card">
+    <view class="section-title">管理后台</view>
+    <view class="menu-list">
+      <view class="menu-item" bindtap="goTo" data-url="/pages/admin/users">用户管理</view>
+      <view class="menu-item" bindtap="goTo" data-url="/pages/admin/recharges">充值管理</view>
+      <view class="menu-item" bindtap="goTo" data-url="/pages/admin/vouchers">充时卡管理</view>
+      <view class="menu-item" bindtap="goTo" data-url="/pages/admin/appointments">预约管理</view>
+      <view class="menu-item" bindtap="goTo" data-url="/pages/admin/activities">活动管理</view>
+      <view class="menu-item" bindtap="goTo" data-url="/pages/admin/courses">球场管理</view>
+      <view class="menu-item" bindtap="goTo" data-url="/pages/admin/bays">打位/时段管理</view>
+      <view class="menu-item" bindtap="goTo" data-url="/pages/admin/products">商品管理</view>
+      <view class="menu-item" bindtap="goTo" data-url="/pages/admin/coaches">教练管理</view>
+      <view class="menu-item" bindtap="goTo" data-url="/pages/admin/records">活动成绩录入</view>
+      <view class="menu-item" bindtap="goTo" data-url="/pages/admin/settings">系统设置</view>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,9 @@
+{
+  "name": "activityAction",
+  "version": "1.0.0",
+  "description": "Golfact 活动报名操作",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "latest"
+  }
+}

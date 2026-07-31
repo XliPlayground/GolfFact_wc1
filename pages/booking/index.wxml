@@ -1,0 +1,112 @@
+<view class="container booking-page">
+  <!-- 日期选择 -->
+  <view class="card">
+    <view class="section-title">选择日期</view>
+    <scroll-view scroll-x class="date-scroll">
+      <view class="date-list">
+        <view class="{{item.className}}" 
+              wx:for="{{dates}}" wx:key="date" 
+              bindtap="selectDate" data-date="{{item.date}}">
+          <view class="date-week">{{item.week}}</view>
+          <view class="date-day">{{item.day}}</view>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 打位选择 -->
+  <view class="card">
+    <view class="section-title">选择打位</view>
+    <view class="bay-list">
+      <view class="{{item.className}}" 
+            wx:for="{{bays}}" wx:key="_id"
+            bindtap="selectBay" data-id="{{item._id}}">
+        {{item.name}}
+      </view>
+    </view>
+  </view>
+
+  <!-- 类型选择 -->
+  <view class="card">
+    <view class="section-title">预约类型</view>
+    <view class="type-list">
+      <view class="{{selfTypeClass}}" bindtap="selectType" data-type="self">自助练球</view>
+      <view class="{{teachingTypeClass}}" bindtap="selectType" data-type="teaching">培训教学</view>
+    </view>
+  </view>
+
+  <!-- 教练选择 -->
+  <view class="card" wx:if="{{showCoachSelector}}">
+    <view class="section-title">选择教练</view>
+    <view class="coach-list">
+      <view class="{{item.className}}" 
+            wx:for="{{coaches}}" wx:key="_id"
+            bindtap="selectCoach" data-id="{{item._id}}">
+        <view class="coach-name">{{item.name}}</view>
+      </view>
+      <view wx:if="{{showNoLinkedCoaches}}" class="empty-hint">暂无已关联教练，请联系老板开通。</view>
+    </view>
+  </view>
+
+  <!-- 时段选择 -->
+  <view class="card">
+    <view class="section-title">选择连续时段（至少 2 段，30 分钟/段）</view>
+    <view class="range-bar">
+      <view>
+        <view class="range-hint">{{rangeHint}}</view>
+        <view wx:if="{{showSelectedRangeText}}" class="range-selected">{{selectedRangeText}}</view>
+      </view>
+      <view wx:if="{{showRangeReset}}" class="range-reset" bindtap="clearSlotSelection">重选</view>
+    </view>
+    <view class="slot-list">
+      <view class="{{item.className}}" 
+            wx:for="{{slots}}" wx:key="_id"
+            bindtap="selectSlot" data-index="{{index}}">
+        <view class="slot-time">{{item.startTime}}</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 需求 -->
+  <view class="card">
+    <view class="section-title">服务需求</view>
+    <scroll-view scroll-x class="requirement-scroll">
+      <checkbox-group class="requirement-list" bindchange="onRequirementsChange">
+        <label class="checkbox-item" wx:for="{{requirements}}" wx:key="value">
+          <checkbox value="{{item.value}}" checked="{{item.checked}}" /> {{item.label}}
+        </label>
+      </checkbox-group>
+    </scroll-view>
+    <view class="form-item mt-24">
+      <view class="form-label">到访人数</view>
+      <view class="visitor-options">
+        <view wx:for="{{visitorOptions}}" wx:key="count"
+              class="{{item.className}}"
+              bindtap="selectVisitorCount" data-count="{{item.count}}">
+          {{item.count}}
+        </view>
+      </view>
+    </view>
+    <view class="form-item mt-24">
+      <view class="form-label">烟灰缸</view>
+      <radio-group bindchange="onSmokingChange">
+        <label class="radio-item"><radio value="none" checked="{{ashtrayNoneChecked}}" /> 不需要</label>
+        <label class="radio-item"><radio value="ashtray" checked="{{ashtrayChecked}}" /> 准备</label>
+      </radio-group>
+    </view>
+  </view>
+
+  <!-- 底部汇总 -->
+  <view class="bottom-bar">
+    <view class="summary">
+      <view wx:if="{{showEmptySummary}}" class="summary-duration muted">请选择时段</view>
+      <view wx:else>
+        <view class="summary-duration">{{selectedDurationText}}</view>
+        <view class="summary-price">扣 {{deductedHours}} 小时</view>
+      </view>
+    </view>
+    <view class="{{submitButtonClass}}" bindtap="goToConfirm">
+      确认预约
+    </view>
+  </view>
+</view>

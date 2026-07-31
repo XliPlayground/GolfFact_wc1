@@ -1,0 +1,29 @@
+<view class="container">
+  <view class="card">
+    <view class="section-title">我的记分卡</view>
+    <view wx:if="{{showCreateButton}}" class="btn-primary" bindtap="createScorecard">新建记分卡</view>
+  </view>
+
+  <view class="card">
+    <view class="section-title">历史记录</view>
+    <view class="tabs">
+      <view wx:for="{{tabs}}" wx:key="value" class="{{item.className}}" bindtap="switchTab" data-tab="{{item.value}}">{{item.label}}</view>
+    </view>
+    <view wx:if="{{showEmpty}}" class="empty-state compact">{{emptyText}}</view>
+    <view wx:for="{{scorecards}}" wx:key="_id" class="scorecard-item" bindtap="editScorecard" data-id="{{item._id}}" data-readonly="{{item.isReadOnly}}">
+      <view class="flex-between">
+        <view>
+          <view class="course-name">
+            <text>{{item.courseName}}</text>
+            <text class="record-tag">{{item.typeText}}</text>
+          </view>
+          <view class="scorecard-date">{{item.playDate}} · {{item.statusText}} · {{item.scoreToParText}}</view>
+        </view>
+        <view class="scorecard-side">
+          <view class="scorecard-total">{{item.totalStrokes}} 杆</view>
+          <view wx:if="{{item.canDelete}}" class="delete-btn" catchtap="deleteScorecard" data-id="{{item._id}}">删除</view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

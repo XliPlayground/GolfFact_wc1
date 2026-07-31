@@ -1,0 +1,76 @@
+.tabs {
+  display: flex;
+  margin-bottom: 12rpx;
+  overflow: hidden;
+  border-radius: 12rpx;
+  background: #F3F4F6;
+}
+
+.tab {
+  flex: 1;
+  padding: 18rpx 0;
+  color: #6B7280;
+  font-size: 26rpx;
+  text-align: center;
+}
+
+.tab.active {
+  background: #DCFCE7;
+  color: #146C43;
+  font-weight: 700;
+}
+
+.scorecard-item {
+  padding: 24rpx 0;
+  border-bottom: 1rpx solid #F3F4F6;
+}
+
+.scorecard-item:last-child {
+  border-bottom: none;
+}
+
+.course-name {
+  font-size: 30rpx;
+  font-weight: 500;
+  margin-bottom: 8rpx;
+}
+
+.record-tag {
+  margin-left: 12rpx;
+  padding: 4rpx 10rpx;
+  border-radius: 999rpx;
+  background: #F3F4F6;
+  color: #6B7280;
+  font-size: 20rpx;
+  font-weight: 500;
+}
+
+.scorecard-date {
+  font-size: 24rpx;
+  color: #6B7280;
+}
+
+.scorecard-total {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #22C55E;
+}
+
+.scorecard-side {
+  min-width: 112rpx;
+  text-align: right;
+}
+
+.delete-btn {
+  display: inline-block;
+  margin-top: 8rpx;
+  padding: 4rpx 14rpx;
+  border-radius: 999rpx;
+  background: #FEE2E2;
+  color: #B91C1C;
+  font-size: 22rpx;
+}
+
+.empty-state.compact {
+  padding: 48rpx 20rpx;
+}

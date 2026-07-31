@@ -1,0 +1,39 @@
+.picker {
+  padding: 24rpx;
+  background: #F9FAFB;
+  border-radius: 12rpx;
+}
+
+.record-item {
+  display: grid;
+  grid-template-columns: 150rpx 1fr 1fr 132rpx;
+  align-items: center;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #F3F4F6;
+  gap: 16rpx;
+}
+
+.record-item:last-child {
+  border-bottom: none;
+}
+
+.participant-name {
+  font-size: 28rpx;
+}
+
+.record-item input {
+  background: #F9FAFB;
+  border-radius: 8rpx;
+  padding: 16rpx;
+  font-size: 28rpx;
+}
+
+.scorecard-btn {
+  padding: 14rpx 8rpx;
+  border-radius: 8rpx;
+  background: #DCFCE7;
+  color: #15803D;
+  font-size: 24rpx;
+  font-weight: 600;
+  text-align: center;
+}

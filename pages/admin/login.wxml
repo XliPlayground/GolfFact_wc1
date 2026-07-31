@@ -1,0 +1,8 @@
+<view class="container">
+  <view class="login-card">
+    <view class="login-title">管理员登录</view>
+    <input class="login-input" placeholder="用户名" value="{{username}}" bindinput="onUsernameInput" />
+    <input class="login-input" placeholder="密码" password value="{{password}}" bindinput="onPasswordInput" />
+    <view class="btn-primary mt-24" bindtap="login">登录</view>
+  </view>
+</view>

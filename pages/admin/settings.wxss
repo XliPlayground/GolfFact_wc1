@@ -1,0 +1,37 @@
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 150rpx 52rpx;
+  gap: 14rpx;
+  align-items: center;
+  padding: 22rpx 0;
+  border-bottom: 1rpx solid #F3F4F6;
+}
+
+.field-row:last-of-type {
+  border-bottom: none;
+}
+
+.field-label {
+  font-size: 30rpx;
+  font-weight: 600;
+}
+
+.field-help {
+  margin-top: 4rpx;
+  color: var(--text-secondary);
+  font-size: 23rpx;
+  line-height: 1.4;
+}
+
+.field-input {
+  height: 72rpx;
+  border-radius: 10rpx;
+  background: #F9FAFB;
+  text-align: center;
+  font-size: 30rpx;
+}
+
+.field-unit {
+  color: var(--text-secondary);
+  font-size: 24rpx;
+}

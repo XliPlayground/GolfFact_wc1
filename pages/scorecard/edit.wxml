@@ -1,0 +1,73 @@
+<view class="container scorecard-page">
+  <view class="card course-card">
+    <view class="section-title">球场</view>
+    <view class="course-actions">
+      <picker wx:if="{{editable}}" bindchange="onCourseChange" value="{{courseIndex}}" range="{{courseOptions}}">
+        <view class="course-picker">{{courseNameText}}</view>
+      </picker>
+      <view wx:if="{{isReadOnly}}" class="course-picker readonly">{{courseNameText}}</view>
+      <view wx:if="{{editable}}" class="location-btn" bindtap="useLocationCourse">GPS</view>
+      <view wx:if="{{isReadOnly}}" class="location-btn readonly">认证</view>
+    </view>
+    <view class="autosave">{{autosaveText}}</view>
+  </view>
+
+  <view class="card">
+    <view class="section-title">逐洞记录</view>
+    <view class="score-head">
+      <text>洞</text>
+      <text>标准</text>
+      <text>杆数</text>
+      <text>推杆</text>
+      <text>罚杆</text>
+      <text>结果</text>
+    </view>
+    <view class="hole-list">
+      <view class="hole-item" wx:for="{{holes}}" wx:key="holeNumber">
+        <view class="hole-number">{{item.holeNumber}}</view>
+        <view class="par-value">{{item.par}}</view>
+        <picker wx:if="{{editable}}" mode="selector" range="{{item.strokeOptions}}" value="{{item.strokesIndex}}" data-index="{{index}}" data-field="strokes" bindchange="onScorePickerChange">
+          <view class="score-picker">{{item.strokes}}</view>
+        </picker>
+        <view wx:if="{{isReadOnly}}" class="score-readonly">{{item.strokes}}</view>
+        <picker wx:if="{{editable}}" mode="selector" range="{{numberOptions}}" value="{{item.puttsIndex}}" data-index="{{index}}" data-field="putts" bindchange="onScorePickerChange">
+          <view class="score-picker">{{item.putts}}</view>
+        </picker>
+        <view wx:if="{{isReadOnly}}" class="score-readonly muted">{{item.putts}}</view>
+        <picker wx:if="{{editable}}" mode="selector" range="{{numberOptions}}" value="{{item.penaltiesIndex}}" data-index="{{index}}" data-field="penalties" bindchange="onScorePickerChange">
+          <view class="score-picker">{{item.penalties}}</view>
+        </picker>
+        <view wx:if="{{isReadOnly}}" class="score-readonly muted">{{item.penalties}}</view>
+        <view class="{{item.resultClass}}">{{item.resultText}}</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="section-title">汇总</view>
+    <view class="summary-grid">
+      <view>
+        <view class="summary-value">{{totalPar}}</view>
+        <view class="summary-label">标准杆</view>
+      </view>
+      <view>
+        <view class="summary-value">{{totalStrokes}}</view>
+        <view class="summary-label">总杆数</view>
+      </view>
+      <view>
+        <view class="summary-value">{{scoreToParText}}</view>
+        <view class="summary-label">相对标准</view>
+      </view>
+      <view>
+        <view class="summary-value">{{totalPutts}}</view>
+        <view class="summary-label">总推杆</view>
+      </view>
+      <view>
+        <view class="summary-value">{{totalPenalties}}</view>
+        <view class="summary-label">总罚杆</view>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{editable}}" class="btn-primary mt-24" bindtap="submitScorecard">保存记分卡</view>
+</view>

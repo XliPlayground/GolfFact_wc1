@@ -1,0 +1,42 @@
+.coach-item {
+  display: flex;
+  margin-bottom: 20rpx;
+}
+
+.coach-avatar {
+  width: 140rpx;
+  height: 140rpx;
+  background: #DCFCE7;
+  border-radius: 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 60rpx;
+  margin-right: 24rpx;
+}
+
+.coach-info {
+  flex: 1;
+}
+
+.coach-name {
+  font-size: 32rpx;
+  font-weight: 600;
+  margin-bottom: 8rpx;
+}
+
+.coach-tags {
+  margin-bottom: 12rpx;
+}
+
+.coach-intro {
+  font-size: 24rpx;
+  color: #6B7280;
+  margin-bottom: 12rpx;
+}
+
+.coach-rate {
+  font-size: 28rpx;
+  color: #22C55E;
+  font-weight: 600;
+}

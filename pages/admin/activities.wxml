@@ -1,0 +1,139 @@
+<view class="container">
+  <view class="card page-head">
+    <view>
+      <view class="section-title">活动管理</view>
+      <view class="head-subtitle">发布活动、审核报名、录入成绩</view>
+    </view>
+    <view class="head-action" bindtap="resetForm">新建</view>
+  </view>
+
+  <view wx:if="{{isEditing}}" class="card form-card">
+    <view class="section-title">活动信息</view>
+    <view class="field-block">
+      <view class="field-label">活动标题</view>
+      <input class="field-input" placeholder="例如 周末下场活动" value="{{form.title}}" data-field="title" bindinput="onInput" />
+    </view>
+    <view class="field-block">
+      <view class="field-label">场地</view>
+      <picker bindchange="onCourseChange" value="{{courseIndex}}" range="{{courseOptions}}">
+        <view class="field-picker">{{coursePickerText}}</view>
+      </picker>
+      <input class="field-input" placeholder="球场或集合地点" value="{{form.location}}" data-field="location" bindinput="onInput" />
+    </view>
+    <view class="form-grid">
+      <view class="field-block">
+        <view class="field-label">开始时间</view>
+        <view class="time-pair">
+          <picker mode="date" value="{{form.startDate}}" data-field="startDate" bindchange="onDateTimeChange">
+            <view class="field-picker compact">{{form.startDate}}</view>
+          </picker>
+          <picker mode="time" value="{{form.startClock}}" data-field="startClock" bindchange="onDateTimeChange">
+            <view class="field-picker compact">{{form.startClock}}</view>
+          </picker>
+        </view>
+      </view>
+      <view class="field-block">
+        <view class="field-label">结束时间</view>
+        <view class="time-pair">
+          <picker mode="date" value="{{form.endDate}}" data-field="endDate" bindchange="onDateTimeChange">
+            <view class="field-picker compact">{{form.endDate}}</view>
+          </picker>
+          <picker mode="time" value="{{form.endClock}}" data-field="endClock" bindchange="onDateTimeChange">
+            <view class="field-picker compact">{{form.endClock}}</view>
+          </picker>
+        </view>
+      </view>
+      <view class="field-block">
+        <view class="field-label">报名开始</view>
+        <view class="time-pair">
+          <picker mode="date" value="{{form.signupStartDate}}" data-field="signupStartDate" bindchange="onDateTimeChange">
+            <view class="field-picker compact">{{form.signupStartDate}}</view>
+          </picker>
+          <picker mode="time" value="{{form.signupStartClock}}" data-field="signupStartClock" bindchange="onDateTimeChange">
+            <view class="field-picker compact">{{form.signupStartClock}}</view>
+          </picker>
+        </view>
+      </view>
+      <view class="field-block">
+        <view class="field-label">报名截止</view>
+        <view class="time-pair">
+          <picker mode="date" value="{{form.signupEndDate}}" data-field="signupEndDate" bindchange="onDateTimeChange">
+            <view class="field-picker compact">{{form.signupEndDate}}</view>
+          </picker>
+          <picker mode="time" value="{{form.signupEndClock}}" data-field="signupEndClock" bindchange="onDateTimeChange">
+            <view class="field-picker compact">{{form.signupEndClock}}</view>
+          </picker>
+        </view>
+      </view>
+      <view class="field-block">
+        <view class="field-label">预计人数</view>
+        <input class="field-input" type="number" placeholder="20" value="{{form.maxParticipants}}" data-field="maxParticipants" bindinput="onInput" />
+      </view>
+      <view class="field-block">
+        <view class="field-label">费用</view>
+        <input class="field-input" type="digit" placeholder="880" value="{{form.fee}}" data-field="fee" bindinput="onInput" />
+      </view>
+    </view>
+    <view class="field-block">
+      <view class="field-label">行程</view>
+      <textarea class="field-textarea" placeholder="集合、开球、返程安排" value="{{form.itinerary}}" data-field="itinerary" bindinput="onInput"></textarea>
+    </view>
+    <view class="field-block">
+      <view class="field-label">餐食</view>
+      <textarea class="field-textarea compact" placeholder="是否含餐、餐食内容" value="{{form.meal}}" data-field="meal" bindinput="onInput"></textarea>
+    </view>
+    <view class="field-block">
+      <view class="field-label">说明</view>
+      <textarea class="field-textarea compact" placeholder="费用包含、注意事项" value="{{form.description}}" data-field="description" bindinput="onInput"></textarea>
+    </view>
+    <view class="btn-primary mt-24" bindtap="saveActivity">保存发布</view>
+  </view>
+
+  <view class="card">
+    <view class="list-head">
+      <view class="section-title">活动列表</view>
+      <view class="tabs">
+        <view wx:for="{{tabs}}" wx:key="value" class="{{item.className}}" bindtap="switchTab" data-tab="{{item.value}}">{{item.label}}</view>
+      </view>
+    </view>
+    <view wx:if="{{showEmpty}}" class="empty-state compact">暂无活动</view>
+    <view wx:for="{{activities}}" wx:key="_id" class="activity-card">
+      <view class="activity-main" bindtap="selectActivity" data-id="{{item._id}}">
+        <view>
+          <view class="activity-title">{{item.title}}</view>
+          <view class="activity-meta">{{item.startTime}} · {{item.location}}</view>
+          <view class="activity-meta">报名截止 {{item.signupEndTime}}</view>
+        </view>
+        <view class="activity-count">{{item.approvedCount}}/{{item.maxParticipantsText}}</view>
+      </view>
+      <view class="status-row">
+        <text>{{item.statusText}}</text>
+        <text>待确认 {{item.pendingCount}}</text>
+        <text>费用 ¥{{item.feeText}}</text>
+      </view>
+      <view class="action-row">
+        <view class="small-btn" bindtap="selectActivity" data-id="{{item._id}}">编辑</view>
+        <view class="small-btn primary" bindtap="markActivityStatus" data-id="{{item._id}}" data-status="ongoing">确认成团</view>
+        <view class="small-btn primary" bindtap="markActivityStatus" data-id="{{item._id}}" data-status="completed">结束</view>
+        <view class="small-btn primary" bindtap="goRecords" data-id="{{item._id}}">成绩录入</view>
+        <view class="small-btn danger" bindtap="cancelActivity" data-id="{{item._id}}">取消</view>
+      </view>
+
+      <view class="registration-list">
+        <view wx:if="{{item.showRegistrationsEmpty}}" class="registration-empty">暂无报名</view>
+        <view wx:for="{{item.registrations}}" wx:key="userId" class="registration-row">
+          <view>
+            <view class="registration-name">{{item.name}}</view>
+            <view class="registration-status">{{item.statusText}}</view>
+          </view>
+          <view class="registration-actions">
+            <view wx:if="{{item.canApprove}}" class="mini-btn primary" bindtap="updateRegistration" data-activityid="{{item.activityId}}" data-userid="{{item.userId}}" data-status="approved">同意</view>
+            <view wx:if="{{item.canReject}}" class="mini-btn danger" bindtap="updateRegistration" data-activityid="{{item.activityId}}" data-userid="{{item.userId}}" data-status="rejected">拒绝</view>
+            <view wx:if="{{item.canSettle}}" class="mini-btn primary" bindtap="updateRegistration" data-activityid="{{item.activityId}}" data-userid="{{item.userId}}" data-status="completed">履约</view>
+            <view wx:if="{{item.canSettle}}" class="mini-btn danger" bindtap="updateRegistration" data-activityid="{{item.activityId}}" data-userid="{{item.userId}}" data-status="no_show">爽约</view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

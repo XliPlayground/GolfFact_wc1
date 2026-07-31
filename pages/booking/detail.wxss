@@ -1,0 +1,76 @@
+.detail-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18rpx;
+}
+
+.detail-date {
+  font-size: 34rpx;
+  font-weight: 700;
+}
+
+.detail-meta {
+  margin-top: 6rpx;
+  color: var(--text-secondary);
+  font-size: 26rpx;
+}
+
+.status-tag {
+  flex-shrink: 0;
+  padding: 8rpx 16rpx;
+  border-radius: 8rpx;
+  font-size: 23rpx;
+}
+
+.status-booked {
+  background: #DCFCE7;
+  color: #16A34A;
+}
+
+.status-completed {
+  background: #F3F4F6;
+  color: #6B7280;
+}
+
+.status-cancelled,
+.status-no_show {
+  background: #FEE2E2;
+  color: #DC2626;
+}
+
+.info-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20rpx;
+  padding: 16rpx 0;
+  border-bottom: 1rpx solid #F3F4F6;
+}
+
+.info-row:last-child {
+  border-bottom: none;
+}
+
+.info-label {
+  flex-shrink: 0;
+  color: var(--text-secondary);
+  font-size: 25rpx;
+}
+
+.info-value {
+  color: var(--text);
+  font-size: 26rpx;
+  text-align: right;
+}
+
+.access-code {
+  padding: 24rpx;
+  border-radius: 12rpx;
+  background: #FEF3C7;
+  color: #92400E;
+  font-size: 38rpx;
+  font-weight: 700;
+  text-align: center;
+  letter-spacing: 2rpx;
+}

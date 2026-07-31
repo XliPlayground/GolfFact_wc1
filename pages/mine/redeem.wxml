@@ -1,0 +1,18 @@
+<view class="container">
+  <view class="card">
+    <view class="section-title">兑换充时卡</view>
+    <view class="scan-panel" bindtap="scanCode">
+      <view class="scan-icon">⌗</view>
+      <view>
+        <view class="scan-title">扫码兑换</view>
+        <view class="scan-subtitle">扫卡片二维码后自动充入账户</view>
+      </view>
+    </view>
+    <input class="field-input" placeholder="请输入或粘贴兑换码" value="{{code}}" bindinput="onCodeInput" />
+    <view class="action-row">
+      <view class="btn-secondary action-btn" bindtap="pasteCode">粘贴</view>
+      <view class="btn-primary action-btn" bindtap="redeem">{{redeemButtonText}}</view>
+    </view>
+    <view class="hint">扫码进入或扫到兑换码时会自动兑换，无需再输入密码。</view>
+  </view>
+</view>

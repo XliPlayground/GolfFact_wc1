@@ -1,0 +1,109 @@
+<view class="home-page">
+  <!-- 头部品牌区 -->
+  <view class="hero">
+    <view class="hero-bg"></view>
+    <view class="hero-sky"></view>
+    <view class="hero-light light-one"></view>
+    <view class="hero-light light-two"></view>
+    <view class="hero-range">
+      <view class="range-line line-one"></view>
+      <view class="range-line line-two"></view>
+      <view class="range-line line-three"></view>
+      <view class="flag"></view>
+      <view class="ball ball-one"></view>
+      <view class="ball ball-two"></view>
+    </view>
+    <view class="hero-content">
+      <view class="hero-kicker">GOLFACT RANGE</view>
+      <view class="site-name">秋の高球练习场</view>
+      <view class="site-notice">{{site.notice}}</view>
+      <view class="hero-actions">
+        <view class="hero-btn" bindtap="goBooking">立即预约</view>
+        <view class="hero-chip-group">
+          <view class="hero-chip">剩余 {{remainingHoursText}}h</view>
+          <view class="hero-chip pending">待履约 {{pendingHoursText}}h</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="container content-panel home-content">
+    <!-- 快捷入口 -->
+    <view class="card">
+      <view class="section-title">快捷入口</view>
+      <view class="quick-grid">
+        <view class="quick-item" wx:for="{{quickLinks}}" wx:key="name" bindtap="onQuickTap" data-path="{{item.path}}">
+          <view class="quick-icon">{{item.icon}}</view>
+          <view class="quick-text">{{item.name}}</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 用户状态 -->
+    <view class="card user-card" bindtap="goToMine">
+      <view class="flex-between">
+        <view>
+          <view class="user-name">{{userDisplayName}}</view>
+          <view class="user-level">{{memberLevelName}}</view>
+        </view>
+        <view class="hours-box">
+          <view class="hours-value">{{remainingHoursText}}</view>
+          <view class="hours-label">剩余小时</view>
+          <view class="pending-label">待履约 {{pendingHoursText}} 小时</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 秋の认证 -->
+    <view class="card cert-card">
+      <view class="section-title">秋の认证</view>
+      <view class="cert-row first">
+        <view class="cert-item">
+          <view class="cert-value">{{certification.holeInOne}}</view>
+          <view class="cert-label">一杆进洞</view>
+        </view>
+        <view class="cert-item">
+          <view class="cert-value">{{certification.eagle}}</view>
+          <view class="cert-label">鹰数</view>
+        </view>
+      </view>
+      <view class="cert-row second">
+        <view class="cert-item">
+          <view class="cert-value">{{certification.birdie}}</view>
+          <view class="cert-label">鸟数</view>
+        </view>
+        <view class="cert-item">
+          <view class="cert-value">{{certification.par}}</view>
+          <view class="cert-label">Par数</view>
+        </view>
+        <view class="cert-item">
+          <view class="cert-value">{{certification.oneChicken}}</view>
+          <view class="cert-label">一只鸡</view>
+        </view>
+      </view>
+
+      <view class="chart-title">最近10场总杆数</view>
+      <view wx:if="{{showChartEmpty}}" class="chart-empty">暂无已保存比赛成绩</view>
+      <view wx:if="{{hasRecentScores}}" class="score-chart">
+        <view class="chart-line" wx:for="{{chartSegments}}" wx:key="style" style="{{item.style}}"></view>
+        <view class="chart-point-wrap" wx:for="{{recentScores}}" wx:key="label" style="{{item.pointStyle}}">
+          <view class="chart-point"></view>
+          <view class="chart-score">{{item.value}}</view>
+        </view>
+      </view>
+      <view wx:if="{{hasRecentScores}}" class="chart-axis">
+        <view wx:for="{{recentScores}}" wx:key="label">{{item.label}}</view>
+      </view>
+    </view>
+
+    <!-- 最近活动 -->
+    <view class="card">
+      <view class="section-title">近期活动</view>
+      <view wx:if="{{activities.length === 0}}" class="empty-state">暂无活动</view>
+      <view wx:for="{{activities}}" wx:key="_id" class="activity-item" bindtap="goToActivity" data-id="{{item._id}}">
+        <view class="activity-title">{{item.title}}</view>
+        <view class="activity-meta">{{item.startTime}} · {{item.location}}</view>
+      </view>
+    </view>
+  </view>
+</view>

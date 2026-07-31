@@ -1,0 +1,128 @@
+<view class="container">
+  <view class="card">
+    <view class="section-title">生成充时卡</view>
+    <view class="form-row">
+      <view class="form-label">方式</view>
+      <picker bindchange="onModeChange" value="{{modeIndex}}" range="{{modeOptions}}" range-key="label">
+        <view class="field-picker">{{modeLabel}}</view>
+      </picker>
+    </view>
+    <view wx:if="{{modeIsActive}}" class="form-row">
+      <view class="form-label">类型</view>
+      <picker bindchange="onTypeChange" value="{{typeIndex}}" range="{{typeOptions}}" range-key="label">
+        <view class="field-picker">{{typeLabel}}</view>
+      </picker>
+    </view>
+    <view wx:if="{{modeIsActive}}" class="form-row">
+      <view class="form-label">小时</view>
+      <input class="field-input" type="digit" value="{{hours}}" bindinput="onHoursInput" />
+    </view>
+    <view wx:if="{{modeIsActive}}" class="form-row">
+      <view class="form-label">充值有效</view>
+      <input class="field-input" type="number" value="{{validDays}}" bindinput="onValidDaysInput" />
+    </view>
+    <view class="form-row">
+      <view class="form-label">卡有效期</view>
+      <picker mode="date" value="{{cardValidUntil}}" bindchange="onCardValidUntilChange">
+        <view class="field-picker">{{cardValidUntil}}</view>
+      </picker>
+    </view>
+    <view class="form-row">
+      <view class="form-label">数量</view>
+      <input class="field-input" type="number" value="{{count}}" bindinput="onCountInput" />
+    </view>
+    <view class="btn-primary mt-24" bindtap="generateVoucher">生成</view>
+  </view>
+
+  <view class="card">
+    <view class="section-title">激活空卡</view>
+    <view class="form-row">
+      <view class="form-label">起始卡号</view>
+      <view class="scan-row">
+        <input class="field-input" value="{{activateCardNo}}" placeholder="扫卡或输入卡号" bindinput="onActivateCardNoInput" />
+        <view class="scan-btn" bindtap="scanActivateCard">扫码</view>
+      </view>
+    </view>
+    <view class="form-row">
+      <view class="form-label">类型</view>
+      <picker bindchange="onActivateTypeChange" value="{{activateTypeIndex}}" range="{{typeOptions}}" range-key="label">
+        <view class="field-picker">{{activateTypeLabel}}</view>
+      </picker>
+    </view>
+    <view class="form-row">
+      <view class="form-label">小时</view>
+      <input class="field-input" type="digit" value="{{activateHours}}" bindinput="onActivateHoursInput" />
+    </view>
+    <view class="form-row">
+      <view class="form-label">充值有效</view>
+      <input class="field-input" type="number" value="{{activateValidDays}}" bindinput="onActivateValidDaysInput" />
+    </view>
+    <view class="form-row">
+      <view class="form-label">卡有效期</view>
+      <picker mode="date" value="{{activateCardValidUntil}}" bindchange="onActivateCardValidUntilChange">
+        <view class="field-picker">{{activateCardValidUntil}}</view>
+      </picker>
+    </view>
+    <view class="form-row">
+      <view class="form-label">连号数量</view>
+      <input class="field-input" type="number" value="{{activateCount}}" bindinput="onActivateCountInput" />
+    </view>
+    <view class="btn-primary mt-24" bindtap="activateVouchers">确认激活</view>
+  </view>
+
+  <view class="card">
+    <view class="section-title">卡片管理</view>
+    <view class="tabs">
+      <view wx:for="{{tabOptions}}" wx:key="value" class="{{item.className}}" bindtap="switchTab" data-tab="{{item.value}}">{{item.label}}</view>
+    </view>
+
+    <view wx:if="{{visibleVouchers.length === 0}}" class="empty-state">暂无卡片</view>
+    <view wx:for="{{visibleVouchers}}" wx:key="_id" class="voucher-item">
+      <view class="flex-between">
+        <view class="voucher-main">
+          <view class="voucher-title">{{item.cardNo}} · {{item.typeLabel}}</view>
+          <view class="voucher-meta">{{item.metaText}}</view>
+          <view class="voucher-code">{{item.token}}</view>
+          <view class="voucher-path">/pages/mine/redeem?code={{item.token}}</view>
+          <view class="voucher-actions">
+            <view class="copy-btn" bindtap="copyVoucher" data-code="{{item.token}}">复制码</view>
+            <view class="receipt-btn" bindtap="printVoucher" data-id="{{item._id}}">复制小票</view>
+            <view wx:if="{{item.canEdit}}" class="copy-btn" bindtap="startEdit" data-id="{{item._id}}">编辑</view>
+            <view wx:if="{{item.canSetPending}}" class="warn-btn" bindtap="setPending" data-id="{{item._id}}">待处理</view>
+            <view wx:if="{{item.canRestore}}" class="receipt-btn" bindtap="restoreActive" data-id="{{item._id}}">恢复</view>
+            <view wx:if="{{item.canEdit}}" class="danger-btn" bindtap="deleteVoucher" data-id="{{item._id}}">删除</view>
+          </view>
+        </view>
+        <view class="voucher-status {{item.status}}">{{item.statusText}}</view>
+      </view>
+
+      <view wx:if="{{item.isEditing}}" class="edit-panel">
+        <view class="form-row">
+          <view class="form-label">类型</view>
+          <picker bindchange="onEditTypeChange" value="{{editTypeIndex}}" range="{{typeOptions}}" range-key="label">
+            <view class="field-picker">{{editTypeLabel}}</view>
+          </picker>
+        </view>
+        <view class="form-row">
+          <view class="form-label">小时</view>
+          <input class="field-input" type="digit" value="{{editHours}}" bindinput="onEditHoursInput" />
+        </view>
+        <view class="form-row">
+          <view class="form-label">充值有效</view>
+          <input class="field-input" type="number" value="{{editValidDays}}" bindinput="onEditValidDaysInput" />
+        </view>
+        <view class="form-row">
+          <view class="form-label">卡有效期</view>
+          <picker mode="date" value="{{editCardValidUntil}}" bindchange="onEditCardValidUntilChange">
+            <view class="field-picker">{{editCardValidUntil}}</view>
+          </picker>
+        </view>
+        <input class="field-input edit-remark" placeholder="备注" value="{{editRemark}}" bindinput="onEditRemarkInput" />
+        <view class="edit-actions">
+          <view class="btn-secondary edit-btn" bindtap="cancelEdit">取消</view>
+          <view class="btn-primary edit-btn" bindtap="saveEdit">保存</view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

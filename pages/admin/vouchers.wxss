@@ -1,0 +1,185 @@
+.form-row {
+  display: grid;
+  grid-template-columns: 120rpx 1fr;
+  gap: 16rpx;
+  align-items: center;
+  margin-bottom: 18rpx;
+}
+
+.form-label {
+  color: var(--text-secondary);
+  font-size: 26rpx;
+}
+
+.field-input,
+.field-picker {
+  min-height: 76rpx;
+  line-height: 76rpx;
+  padding: 0 18rpx;
+  border-radius: 12rpx;
+  background: #F9FAFB;
+  box-sizing: border-box;
+}
+
+.scan-row {
+  display: grid;
+  grid-template-columns: 1fr 112rpx;
+  gap: 12rpx;
+  align-items: center;
+}
+
+.scan-row .field-input {
+  width: 100%;
+}
+
+.scan-btn {
+  min-height: 76rpx;
+  line-height: 76rpx;
+  border-radius: 10rpx;
+  background: #DCFCE7;
+  color: #15803D;
+  font-size: 24rpx;
+  font-weight: 600;
+  text-align: center;
+}
+
+.tabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10rpx;
+  margin-bottom: 18rpx;
+}
+
+.tab {
+  min-height: 68rpx;
+  line-height: 68rpx;
+  border-radius: 10rpx;
+  background: #F3F4F6;
+  color: #6B7280;
+  font-size: 25rpx;
+  text-align: center;
+}
+
+.tab.active {
+  background: #DCFCE7;
+  color: #15803D;
+  font-weight: 600;
+}
+
+.voucher-item {
+  padding: 22rpx 0;
+  border-bottom: 1rpx solid #F3F4F6;
+}
+
+.voucher-item:last-child {
+  border-bottom: none;
+}
+
+.voucher-main {
+  min-width: 0;
+}
+
+.voucher-title {
+  font-size: 30rpx;
+  font-weight: 600;
+}
+
+.voucher-meta,
+.voucher-path,
+.voucher-code {
+  margin-top: 4rpx;
+  color: var(--text-secondary);
+  font-size: 23rpx;
+}
+
+.voucher-code {
+  color: #111827;
+  font-weight: 600;
+  word-break: break-all;
+}
+
+.voucher-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  margin-top: 12rpx;
+}
+
+.copy-btn,
+.receipt-btn,
+.warn-btn,
+.danger-btn {
+  display: inline-block;
+  padding: 8rpx 16rpx;
+  border-radius: 8rpx;
+  font-size: 23rpx;
+}
+
+.copy-btn {
+  background: #F3F4F6;
+  color: #374151;
+}
+
+.receipt-btn {
+  background: #DCFCE7;
+  color: #15803D;
+}
+
+.warn-btn {
+  background: #FEF3C7;
+  color: #B45309;
+}
+
+.danger-btn {
+  background: #FEE2E2;
+  color: #DC2626;
+}
+
+.voucher-status {
+  flex-shrink: 0;
+  padding: 6rpx 14rpx;
+  border-radius: 8rpx;
+  background: #DCFCE7;
+  color: #16A34A;
+  font-size: 22rpx;
+}
+
+.voucher-status.used {
+  background: #E5E7EB;
+  color: #6B7280;
+}
+
+.voucher-status.inactive {
+  background: #FEF3C7;
+  color: #B45309;
+}
+
+.voucher-status.pending {
+  background: #E0E7FF;
+  color: #4338CA;
+}
+
+.edit-panel {
+  margin-top: 18rpx;
+  padding: 18rpx;
+  border-radius: 12rpx;
+  background: #F9FAFB;
+}
+
+.edit-remark {
+  width: 100%;
+  margin-top: 8rpx;
+}
+
+.edit-actions {
+  display: grid;
+  grid-template-columns: 180rpx 1fr;
+  gap: 14rpx;
+  margin-top: 16rpx;
+}
+
+.edit-btn {
+  min-height: 76rpx;
+  padding: 16rpx 0;
+  box-sizing: border-box;
+}

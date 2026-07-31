@@ -1,0 +1,77 @@
+<view class="container">
+  <view class="card page-head">
+    <view>
+      <view class="section-title">球场管理</view>
+      <view class="head-subtitle">维护球场、18洞标准杆和场地特点</view>
+    </view>
+    <view class="head-action" bindtap="resetForm">新建</view>
+  </view>
+
+  <view wx:if="{{isEditing}}" class="card form-card">
+    <view class="section-title">球场信息</view>
+    <view class="field-block">
+      <view class="field-label">球场名称</view>
+      <input class="field-input" placeholder="例如 上海旭宝高尔夫俱乐部" value="{{form.name}}" data-field="name" bindinput="onInput" />
+    </view>
+    <view class="form-grid">
+      <view class="field-block">
+        <view class="field-label">省份</view>
+        <input class="field-input" placeholder="上海" value="{{form.province}}" data-field="province" bindinput="onInput" />
+      </view>
+      <view class="field-block">
+        <view class="field-label">城市</view>
+        <input class="field-input" placeholder="上海" value="{{form.city}}" data-field="city" bindinput="onInput" />
+      </view>
+    </view>
+    <view class="field-block">
+      <view class="field-label">地址</view>
+      <input class="field-input" placeholder="详细地址" value="{{form.address}}" data-field="address" bindinput="onInput" />
+    </view>
+    <view class="form-grid">
+      <view class="field-block">
+        <view class="field-label">纬度</view>
+        <input class="field-input" placeholder="可空" value="{{form.latitude}}" data-field="latitude" bindinput="onInput" />
+      </view>
+      <view class="field-block">
+        <view class="field-label">经度</view>
+        <input class="field-input" placeholder="可空" value="{{form.longitude}}" data-field="longitude" bindinput="onInput" />
+      </view>
+      <view class="field-block">
+        <view class="field-label">洞数</view>
+        <input class="field-input" type="number" value="{{form.holeCount}}" data-field="holeCount" bindinput="onInput" />
+      </view>
+      <view class="field-block">
+        <view class="field-label">来源</view>
+        <input class="field-input" value="{{form.dataSource}}" data-field="dataSource" bindinput="onInput" />
+      </view>
+    </view>
+    <view class="field-block">
+      <view class="field-label">每洞标准杆</view>
+      <textarea class="field-textarea" placeholder="用逗号分隔 18 个数字，例如 4,5,4,3..." value="{{form.parsText}}" data-field="parsText" bindinput="onInput"></textarea>
+    </view>
+    <view class="field-block">
+      <view class="field-label">场地特点</view>
+      <textarea class="field-textarea compact" placeholder="球道、水障碍、果岭、适合活动等备注" value="{{form.features}}" data-field="features" bindinput="onInput"></textarea>
+    </view>
+    <view class="btn-primary mt-24" bindtap="saveCourse">保存球场</view>
+  </view>
+
+  <view class="card">
+    <view class="section-title">基础库</view>
+    <view wx:if="{{showEmpty}}" class="empty-state compact">暂无球场</view>
+    <view wx:for="{{courses}}" wx:key="_id" class="course-card">
+      <view class="course-main" bindtap="selectCourse" data-id="{{item._id}}">
+        <view>
+          <view class="course-title">{{item.name}}</view>
+          <view class="course-meta">{{item.regionText}} · {{item.holeCountText}}洞 · Par {{item.totalParText}}</view>
+          <view class="course-feature">{{item.features}}</view>
+        </view>
+      </view>
+      <view class="pars-line">{{item.parsText}}</view>
+      <view class="action-row">
+        <view class="small-btn" bindtap="selectCourse" data-id="{{item._id}}">编辑</view>
+        <view class="small-btn danger" bindtap="deleteCourse" data-id="{{item._id}}">删除</view>
+      </view>
+    </view>
+  </view>
+</view>

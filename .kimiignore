@@ -1,0 +1,30 @@
+# ==========================================
+# Golfact 微信小程序 - Kimi Code 忽略规则
+# ==========================================
+
+# --- 1. 文档和规划文件（开发参考，不涉代码逻辑）---
+planning/
+docs/
+*.md
+*.rtf
+*.txt
+
+# --- 2. 敏感配置 ---
+project.private.config.json
+
+# --- 3. Mock 数据（体积大，且多数是静态假数据）---
+utils/mock.js
+
+# --- 4. 云函数依赖（如有） ---
+cloudfunctions/**/node_modules/
+
+# --- 5. 小程序构建产物和缓存 ---
+miniprogram_npm/
+
+# --- 6. 其他非代码文件 ---
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.svg
+*.mp4

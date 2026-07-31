@@ -1,0 +1,16 @@
+<view class="container">
+  <view class="card summary-card">
+    <view class="summary-title">本月累计课时</view>
+    <view class="summary-hours">{{totalHours}} 小时</view>
+  </view>
+
+  <view class="card">
+    <view class="section-title">课程安排</view>
+    <view wx:if="{{appointments.length === 0}}" class="empty-state">暂无课程预约</view>
+    <view wx:for="{{appointments}}" wx:key="_id" class="appointment-item">
+      <view class="appointment-date">{{item.date}} {{item.startTime}}-{{item.endTime}}</view>
+      <view class="appointment-info">{{item.bayName}} · {{item.userName}} · {{item.visitorCount || 1}}人</view>
+      <view class="appointment-coachhours">教练课时：{{item.coachHours}} 小时</view>
+    </view>
+  </view>
+</view>

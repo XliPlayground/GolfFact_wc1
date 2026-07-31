@@ -1,0 +1,39 @@
+<view class="container">
+  <view class="card">
+    <view class="section-title">预约列表</view>
+    <view class="tabs">
+      <view wx:for="{{tabOptions}}" wx:key="value" class="{{item.className}}" bindtap="switchTab" data-tab="{{item.value}}">{{item.label}}</view>
+    </view>
+    <view class="filter-row">
+      <picker bindchange="onUserFilterChange" value="{{userFilterIndex}}" range="{{userFilterOptions}}" range-key="displayName">
+        <view class="field-picker">{{selectedUserFilterName}}</view>
+      </picker>
+      <picker mode="date" value="{{selectedDate}}" bindchange="onDateFilterChange">
+        <view class="field-picker">{{selectedDateText}}</view>
+      </picker>
+      <view class="clear-btn" bindtap="clearFilters">清空</view>
+    </view>
+  </view>
+
+  <view wx:if="{{appointments.length === 0}}" class="empty-state">暂无预约</view>
+
+  <view wx:for="{{appointments}}" wx:key="_id" class="card appointment-card">
+    <view class="flex-between">
+      <view>
+        <view class="appointment-title">{{item.userName}} · {{item.typeText}}</view>
+        <view class="appointment-time">{{item.date}} {{item.startTime}}-{{item.endTime}}</view>
+      </view>
+      <view class="status status-{{item.status}}">{{item.statusText}}</view>
+    </view>
+    <view class="appointment-meta">{{item.bayName}} · {{item.duration}} 小时 · 扣 {{item.deductedHours}} 小时</view>
+    <view wx:if="{{item.confirmUntilText}}" class="appointment-meta">确认截止：{{item.confirmUntilText}}</view>
+    <view wx:if="{{item.extraPenaltyHours}}" class="appointment-meta text-danger">爽约追加扣时：{{item.extraPenaltyHours}} 小时</view>
+    <view wx:if="{{item.settlementModeText}}" class="appointment-meta">{{item.settlementModeText}}</view>
+    <view wx:if="{{item.requirementsText}}" class="appointment-meta">需求：{{item.requirementsText}}</view>
+    <view wx:if="{{item.isBooked}}" class="action-row">
+      <view class="small-btn primary" bindtap="markCompleted" data-id="{{item._id}}">完成</view>
+      <view class="small-btn" bindtap="markCancelled" data-id="{{item._id}}">取消</view>
+      <view class="small-btn danger" bindtap="markNoShow" data-id="{{item._id}}">爽约</view>
+    </view>
+  </view>
+</view>

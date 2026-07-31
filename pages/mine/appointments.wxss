@@ -1,0 +1,72 @@
+.tabs {
+  display: flex;
+  background: white;
+  border-radius: 16rpx;
+  margin-bottom: 24rpx;
+  overflow: hidden;
+}
+
+.tab {
+  flex: 1;
+  text-align: center;
+  padding: 24rpx 0;
+  font-size: 28rpx;
+  color: #6B7280;
+}
+
+.tab.active {
+  color: #22C55E;
+  border-bottom: 4rpx solid #22C55E;
+}
+
+.appointment-item {
+  margin-bottom: 20rpx;
+}
+
+.appointment-date {
+  font-size: 30rpx;
+  font-weight: 600;
+  margin-bottom: 8rpx;
+}
+
+.appointment-info {
+  font-size: 26rpx;
+  color: #6B7280;
+}
+
+.detail-link {
+  display: inline-block;
+  margin-top: 14rpx;
+  color: #16A34A;
+  font-size: 24rpx;
+  font-weight: 600;
+}
+
+.status-tag {
+  padding: 6rpx 16rpx;
+  border-radius: 8rpx;
+  font-size: 22rpx;
+}
+
+.status-booked {
+  background: #DCFCE7;
+  color: #16A34A;
+}
+
+.status-completed {
+  background: #F3F4F6;
+  color: #6B7280;
+}
+
+.status-cancelled, .status-no_show {
+  background: #FEE2E2;
+  color: #DC2626;
+}
+
+.access-code {
+  background: #FEF3C7;
+  color: #92400E;
+  padding: 12rpx 20rpx;
+  border-radius: 8rpx;
+  font-size: 26rpx;
+}

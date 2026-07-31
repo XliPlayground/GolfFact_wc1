@@ -1,0 +1,26 @@
+<view class="container">
+  <view class="tabs">
+    <view class="tab {{activeTab === 'upcoming' ? 'active' : ''}}" bindtap="switchTab" data-tab="upcoming">待使用</view>
+    <view class="tab {{activeTab === 'completed' ? 'active' : ''}}" bindtap="switchTab" data-tab="completed">已完成</view>
+    <view class="tab {{activeTab === 'cancelled' ? 'active' : ''}}" bindtap="switchTab" data-tab="cancelled">已取消</view>
+  </view>
+
+  <view wx:if="{{appointments.length === 0}}" class="empty-state">暂无预约记录</view>
+  
+  <view wx:for="{{appointments}}" wx:key="_id" class="card appointment-item">
+    <view class="flex-between" bindtap="goDetail" data-id="{{item._id}}">
+      <view>
+        <view class="appointment-date">{{item.date}} {{item.startTime}}-{{item.endTime}}</view>
+        <view class="appointment-info">{{item.bayName}} · {{item.type === 'teaching' ? '培训' : '自助'}}</view>
+      </view>
+      <view class="status-tag status-{{item.status}}">{{statusText[item.status]}}</view>
+    </view>
+    <view class="detail-link" bindtap="goDetail" data-id="{{item._id}}">查看详情</view>
+    <view wx:if="{{item.type === 'self' && item.status === 'booked'}}" class="access-code mt-16">
+      门禁密码：{{item.accessCode || '预约当天显示'}}
+    </view>
+    <view class="mt-16" wx:if="{{item.status === 'booked'}}">
+      <view class="btn-secondary" bindtap="cancelAppointment" data-id="{{item._id}}">取消预约</view>
+    </view>
+  </view>
+</view>

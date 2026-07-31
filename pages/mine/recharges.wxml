@@ -1,0 +1,22 @@
+<view class="container">
+  <view class="card summary-card">
+    <view class="summary-title">当前有效时长</view>
+    <view class="summary-hours">{{totalValidHours}} 小时</view>
+    <view class="summary-expiry">最近到期日：{{nearestExpiry || '-'}}</view>
+  </view>
+
+  <view class="card">
+    <view class="section-title">充值记录</view>
+    <view wx:if="{{recharges.length === 0}}" class="empty-state">暂无充值记录</view>
+    <view wx:for="{{recharges}}" wx:key="_id" class="recharge-item">
+      <view class="flex-between">
+        <view>
+          <view class="recharge-hours">+{{item.hours}} 小时</view>
+          <view class="recharge-date">{{item.createdAt}}</view>
+        </view>
+        <view class="recharge-status {{item.status}}">{{statusText[item.status]}}</view>
+      </view>
+      <view class="recharge-expiry">到期日：{{item.expiryDate}} · 剩余 {{item.remainingHours}} 小时 · 管理员录入</view>
+    </view>
+  </view>
+</view>

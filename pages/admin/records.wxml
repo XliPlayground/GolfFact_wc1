@@ -1,0 +1,19 @@
+<view class="container">
+  <view class="card">
+    <view class="section-title">选择活动</view>
+    <picker bindchange="onActivityChange" value="{{activityIndex}}" range="{{activities}}" range-key="title">
+      <view class="picker">{{activityTitle}}</view>
+    </picker>
+  </view>
+
+  <view class="card" wx:if="{{selectedActivity}}">
+    <view class="section-title">报名会员成绩录入</view>
+    <view wx:for="{{participants}}" wx:key="userId" class="record-item">
+      <view class="participant-name">{{item.name}}</view>
+      <input type="number" placeholder="总杆数" data-index="{{index}}" data-field="totalStrokes" bindinput="onScoreInput" value="{{item.totalStrokes}}" />
+      <input type="number" placeholder="净杆数" data-index="{{index}}" data-field="netScore" bindinput="onScoreInput" value="{{item.netScore}}" />
+      <view class="scorecard-btn" bindtap="editScorecard" data-userid="{{item.userId}}" data-name="{{item.name}}">逐洞录入</view>
+    </view>
+    <view class="btn-primary mt-24" bindtap="submitRecords">保存成绩</view>
+  </view>
+</view>

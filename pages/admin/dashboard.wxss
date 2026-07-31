@@ -1,0 +1,13 @@
+.menu-list {
+  padding: 0;
+}
+
+.menu-item {
+  padding: 28rpx 0;
+  border-bottom: 1rpx solid #F3F4F6;
+  font-size: 30rpx;
+}
+
+.menu-item:last-child {
+  border-bottom: none;
+}

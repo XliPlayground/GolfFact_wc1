@@ -1,0 +1,13 @@
+<view class="container">
+  <view class="card coach-item" wx:for="{{coaches}}" wx:key="_id" bindtap="goDetail" data-id="{{item._id}}">
+    <view class="coach-avatar">👤</view>
+    <view class="coach-info">
+      <view class="coach-name">{{item.name}}</view>
+      <view class="coach-tags">
+        <text class="tag tag-primary" wx:for="{{item.tags}}" wx:key="*this">{{item}}</text>
+      </view>
+      <view class="coach-intro">{{item.intro}}</view>
+    </view>
+  </view>
+  <view wx:if="{{coaches.length === 0}}" class="empty-state">暂无已关联教练</view>
+</view>
