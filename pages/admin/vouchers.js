@@ -130,7 +130,7 @@ Page({
         isExpired: expired,
         typeLabel: typeMap[item.type] || item.type,
         statusText: expired && item.status !== 'used' ? '已过期' : (statusMap[item.status] || item.status),
-        qrReady: Boolean(item.qrFileID),
+        qrReady: Boolean(item.qrFileID && item.qrType === 'token'),
         isLocalOnly: String(item._id || '').indexOf('voucher_') === 0,
         metaText: item.status === 'inactive'
           ? `未设置权益 · 卡有效期至 ${item.cardValidUntil || '-'}`
@@ -507,7 +507,7 @@ Page({
       wx.showToast({ title: '未找到卡片', icon: 'none' });
       return;
     }
-    if (voucher.qrFileID) {
+    if (voucher.qrFileID && voucher.qrType === 'token') {
       this.setData({ showQrModal: true, qrVoucher: voucher });
       return;
     }

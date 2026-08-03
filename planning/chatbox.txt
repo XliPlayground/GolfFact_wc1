@@ -798,3 +798,12 @@ CHANGED=pages/booking/index.js|pages/booking/index.wxml|utils/service.js
 FIX=show_fallback_05_24_slots_when_cloud_slots_empty,default_bays_when_cloud_bays_empty,avoid_cloud_create_for_fallback_slots
 VERIFY=node_c_bookingIndex_service_ok,wxml_scan_clean
 -- END 4A0E9B7C 4 --
+
+[Codex] 4
+GPT-5 Codex, 2026-08-03 09:40 CST, A1B49C7E, 4
+TYPE=FIX STATUS=APPLIED
+SCOPE=voucher_old_round_qr_cache
+CHANGED=pages/admin/vouchers.js
+FIX=only_reuse_qrFileID_when_qrType_token,force_regenerate_old_wxacode_records
+VERIFY=node_c_adminVouchers_ok
+-- END A1B49C7E 4 --
